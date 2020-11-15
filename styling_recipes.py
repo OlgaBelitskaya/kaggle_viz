@@ -134,5 +134,3 @@ HTML("""<style>"""+\
 """<text style='font-size:200%; font-family:Lobster'>Lobster </text>"""+\
 """<text style='font-size:200%; font-family:Wallpoet'>Wallpoet </text>"""+\
 """<text style='font-size:200%; font-family:Orbitron'>Orbitron </text>""")
-
-"""<span class='h1'>📑 In Progress</span>"""

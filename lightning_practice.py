@@ -20,10 +20,17 @@ dhtml('File Writing')
 # from sklearn.preprocessing import \
 # MinMaxScaler as mms
 # from lightning import Lightning
-# lgn=Lightning(ipython=True,local=True)
 # 
-# def light_line(file_path,file_name,lw,cmap,
-#                w=500,h=300):
+# def lightning_connect(connect):
+#     host='https://public.lightning-viz.org'
+#     if connect:
+#         lgn=Lightning(ipython=True,host=host)
+#     else:
+#         lgn=Lightning(ipython=True,local=True)
+#     return lgn
+# 
+# def light_line(lgn,file_path,file_name,
+#                lw=1,cmap='hsv',w=700,h=300):
 #     series=np.loadtxt(
 #         file_path+file_name,delimiter=',',skiprows=1)
 #     if series.shape[0]>series.shape[1]:
@@ -35,9 +42,9 @@ dhtml('File Writing')
 #                  width=w,height=h)
 #     display(viz)
 #     
-# def light_scatter(file_path,file_name,x,y,
-#                   value,size,label,cmap,
-#                   w=500,h=300,sep='\t'):
+# def light_scatter(lgn,file_path,file_name,
+#                   x,y,value,size,label,cmap,
+#                   w=700,h=300,sep='\t'):
 #     data=pd.read_csv(file_path+file_name,sep=sep)
 #     size_array=data[size].values.reshape(-1,1)
 #     scaler=mms(feature_range=(3,15)).fit(size_array)
@@ -53,16 +60,37 @@ dhtml('File Usage')
 
 # Commented out IPython magic to ensure Python compatibility.
 # %run light_plots.py
+lgn=lightning_connect(False)
+
 file_path='../input/image-examples-for-mixed-styles/'
 file_name='beethoven.csv'
-light_line(file_path,file_name,1,'hsv')
+light_line(lgn,file_path,file_name)
 
 file_path='../input/geodata-for-exercises/'
 file_name='huge_cities.tsv'
 y='latitude'; x='longitude'; 
 value='growth'; size='y_2014'; 
 label='city'; cmap='Spectral'
-light_scatter(file_path,file_name,x,y,
-              value,size,label,cmap)
+light_scatter(lgn,file_path,file_name,
+              x,y,value,size,label,cmap)
 
-dhtml('In Progress')
+dhtml('Quick Local Examples')
+
+import numpy as np
+from IPython.core.display import display
+data=np.random.rand(64,64)
+data[data<0.98]=0
+lgn.force(data)
+
+us_states=["NA","AK","AL","AR","AZ","CA","CO","CT",
+           "DC","DE","FL","GA","HI","IA","ID","IL","IN",
+           "KS","KY","LA","MA","MD","ME","MI","MN","MO",
+           "MS","MT","NC","ND","NE","NH","NJ","NM","NV",
+           "NY","OH","OK","OR","PA","RI","SC","SD","TN",
+           "TX","UT","VA","VI","VT","WA","WI","WV","WY"]
+data=np.random.randn(len(us_states))
+lgn.map(states,data,colormap='Lightning')
+
+[x,y,z]=[np.random.rand(30) 
+         for i in range(3)]
+lgn.scatter3(x,y,z,size=3)
