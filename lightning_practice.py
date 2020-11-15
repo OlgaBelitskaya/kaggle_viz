@@ -30,7 +30,7 @@ dhtml('File Writing')
 #     return lgn
 # 
 # def light_line(lgn,file_path,file_name,
-#                lw=1,cmap='hsv',w=700,h=300):
+#                lw=1,cmap='hsv',w=680,h=300):
 #     series=np.loadtxt(
 #         file_path+file_name,delimiter=',',skiprows=1)
 #     if series.shape[0]>series.shape[1]:
@@ -44,7 +44,7 @@ dhtml('File Writing')
 #     
 # def light_scatter(lgn,file_path,file_name,
 #                   x,y,value,size,label,cmap,
-#                   w=700,h=300,sep='\t'):
+#                   w=680,h=300,sep='\t'):
 #     data=pd.read_csv(file_path+file_name,sep=sep)
 #     size_array=data[size].values.reshape(-1,1)
 #     scaler=mms(feature_range=(3,15)).fit(size_array)
@@ -89,7 +89,7 @@ us_states=["NA","AK","AL","AR","AZ","CA","CO","CT",
            "NY","OH","OK","OR","PA","RI","SC","SD","TN",
            "TX","UT","VA","VI","VT","WA","WI","WV","WY"]
 data=np.random.randn(len(us_states))
-lgn.map(states,data,colormap='Lightning')
+lgn.map(us_states,data,colormap='Lightning')
 
 [x,y,z]=[np.random.rand(30) 
          for i in range(3)]
