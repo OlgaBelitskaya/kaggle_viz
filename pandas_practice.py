@@ -7,21 +7,18 @@ Original file is located at
     https://colab.research.google.com/drive/164bhiVt_yHLXN190exBbmil4YSLJZGEc
 """
 
+import json,pandas as pd,pylab as pl
+
 # Commented out IPython magic to ensure Python compatibility.
 # %run ../input/python-recipes/dhtml.py
-dhtml('Data')
+dhtml('Plotting Style - "a Couple of Code Rows"')
 
-import pandas as pd,pylab as pl
 colors=['#3636ff','#ff3636','#36ff36',
         '#ff36ff','#ffff36','#36ffff']
 user='https://raw.githubusercontent.com/OlgaBelitskaya/'
 path='machine_learning_engineer_nd009/'+\
      'master/Machine_Learning_Engineer_ND_P3/'
 data=pd.read_csv(user+path+'customers.csv')
-
-# Commented out IPython magic to ensure Python compatibility.
-# %run ../input/python-recipes/dhtml.py
-dhtml('Plotting Style - "a Couple of Code Rows"')
 
 fig=pl.figure(figsize=(10,8))
 ax1=fig.add_subplot('211')
@@ -59,3 +56,23 @@ params={'bins':80,'alpha':.5,
         'figsize':(10,4),'color':colors}
 data_range.iloc[:,:3].plot.hist(**params)
 data_range.iloc[:,3:].plot.hist(**params);
+
+dhtml('Data Transformation')
+
+url='https://www.ecb.europa.eu/stats/policy_and_exchange_rates/'+\
+    'euro_reference_exchange_rates/html/index.en.html'
+exchange_rates=pd.read_html(url)[0]\
+.drop('Chart',axis=1)
+
+exchange_rates[exchange_rates['Spot']<200]\
+.set_index('Currency').plot.bar(
+    figsize=(10,4),color=colors[0]);
+
+exchange_rates_json=\
+exchange_rates.to_json(orient='table')
+exchange_rates_string=\
+json.loads(exchange_rates_json)
+n=json.dumps(exchange_rates_string).find('data')
+json.dumps(exchange_rates_string)[n+7:-1]
+
+dhtml('In Progress')
