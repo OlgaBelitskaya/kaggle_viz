@@ -84,18 +84,50 @@ json.loads(exchange_rates_json)
 n=json.dumps(exchange_rates_string).find('data')
 json.dumps(exchange_rates_string)[n+7:-1]
 
-dhtml('In Progress')
+dhtml('Danfo DataFrames')
 
-html_str="""<meta name='viewport' """+\
-"""content='width=device-width,initial-scale=1.0'>"""+\
-"""<script src='https://cdn.jsdelivr.net/npm/"""+\
-"""danfojs@0.0.1.2/dist/index.min.js'></script>"""+\
-"""<script src='https://cdn.jsdelivr.net/npm/"""+\
-"""@tensorflow/tfjs@latest'></script>"""+\
-"""</head><body><div id='plot_div'></div>"""+\
-"""<script>df=new dfd.DataFrame("""+\
-"""    {'pig':[20,18,489,675,1776],"""+\
-"""     'horse':[4,25,281,600,1900]},"""+\
-"""    {index:[1990,1997,2003,2009,2014]})"""+\
-"""df.plot('plot_div').line()"""+\
-"""</script></body></html>"""
+# Commented out IPython magic to ensure Python compatibility.
+# %%writefile danfo_csv.py
+# from IPython.core.display import display,HTML
+# 
+# def danfo_table_csv(url):
+#     html_str="""<html><head><meta charset='UTF-8'>"""+\
+#     """<meta name='viewport' """+\
+#     """content='width=device-width,initial-scale=1.0'>"""+\
+#     """<script src='https://cdn.jsdelivr.net/npm/"""+\
+#     """danfojs@0.1.1/dist/index.min.js'> </script></head>"""+\
+#     """<body><h1>CSV =>>> Danfo DataFrames</h1>"""+\
+#     """<div id='div015_1'></div><script>"""+\
+#     """var url='"""+url+"""';"""+\
+#     """dfd.read_csv(url)"""+\
+#     """   .then(df=>{df.plot('div015_1').table()})"""+\
+#     """   .catch(err=>{console.log(err);})"""+\
+#     """</script></body></html>"""
+#     display(HTML(html_str))
+#     
+# def danfo_chart_csv(url,columns):
+#     html_str="""<html><head><meta charset='UTF-8'>"""+\
+#     """<meta name='viewport' """+\
+#     """content='width=device-width,initial-scale=1.0'>"""+\
+#     """<script src='https://cdn.jsdelivr.net/npm/"""+\
+#     """danfojs@0.1.1/dist/index.min.js'> </script></head>"""+\
+#     """<body><h1>CSV =>>> Danfo DataFrames</h1>"""+\
+#     """<div id='div015_2'></div><script>"""+\
+#     """var url='"""+url+"""';"""+\
+#     """dfd.read_csv(url)"""+\
+#     """   .then(df=>{df.plot('div015_2').line("""+\
+#     """   {columns:"""+str(columns)+"""})})"""+\
+#     """   .catch(err=>{console.log(err);})"""+\
+#     """</script></body></html>"""
+#     display(HTML(html_str))
+
+# Commented out IPython magic to ensure Python compatibility.
+# %run danfo_csv.py
+url='https://raw.githubusercontent.com/OlgaBelitskaya/'+\
+    'machine_learning_engineer_nd009/master/'+\
+    'Machine_Learning_Engineer_ND_P3/customers.csv'
+danfo_table_csv(url)
+
+columns=['Fresh','Milk','Grocery','Frozen',
+         'Detergents_Paper','Delicatessen']
+danfo_chart_csv(url,columns)
