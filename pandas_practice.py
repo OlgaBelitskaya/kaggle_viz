@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/164bhiVt_yHLXN190exBbmil4YSLJZGEc
 """
 
-import json,pandas as pd,pylab as pl
+import json,pandas as pd,pylab as pl,numpy as np
 
 # Commented out IPython magic to ensure Python compatibility.
 # %run ../input/python-recipes/dhtml.py
@@ -37,6 +37,12 @@ data[data<5000].drop('Region',axis=1)\
          boxprops={'color':colors[0]},
          flierprops={'markerfacecolor':colors[1]});
 
+data[data<10000].plot.hexbin(
+    x='Fresh',y='Milk',C='Grocery',
+    reduce_C_function=np.mean,gridsize=20,
+    cmap='Spectral',figsize=(10,4))
+pl.show()
+
 fig=pl.figure(figsize=(10,4))
 ax=fig.add_subplot('111')
 data.iloc[:,int(1):].plot.area(
@@ -59,10 +65,13 @@ data_range.iloc[:,3:].plot.hist(**params);
 
 dhtml('Data Transformation')
 
+import json,pandas as pd,pylab as pl
 url='https://www.ecb.europa.eu/stats/policy_and_exchange_rates/'+\
     'euro_reference_exchange_rates/html/index.en.html'
 exchange_rates=pd.read_html(url)[0]\
 .drop('Chart',axis=1)
+exchange_rates.to_hdf('exchange_rates.h5',key='spot',mode='w')
+pd.read_hdf('exchange_rates.h5','spot').head(7).T
 
 exchange_rates[exchange_rates['Spot']<200]\
 .set_index('Currency').plot.bar(
@@ -76,3 +85,17 @@ n=json.dumps(exchange_rates_string).find('data')
 json.dumps(exchange_rates_string)[n+7:-1]
 
 dhtml('In Progress')
+
+html_str="""<meta name='viewport' """+\
+"""content='width=device-width,initial-scale=1.0'>"""+\
+"""<script src='https://cdn.jsdelivr.net/npm/"""+\
+"""danfojs@0.0.1.2/dist/index.min.js'></script>"""+\
+"""<script src='https://cdn.jsdelivr.net/npm/"""+\
+"""@tensorflow/tfjs@latest'></script>"""+\
+"""</head><body><div id='plot_div'></div>"""+\
+"""<script>df=new dfd.DataFrame("""+\
+"""    {'pig':[20,18,489,675,1776],"""+\
+"""     'horse':[4,25,281,600,1900]},"""+\
+"""    {index:[1990,1997,2003,2009,2014]})"""+\
+"""df.plot('plot_div').line()"""+\
+"""</script></body></html>"""
