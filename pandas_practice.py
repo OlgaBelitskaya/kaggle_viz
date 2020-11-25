@@ -82,7 +82,41 @@ exchange_rates.to_json(orient='table')
 exchange_rates_string=\
 json.loads(exchange_rates_json)
 n=json.dumps(exchange_rates_string).find('data')
-json.dumps(exchange_rates_string)[n+7:-1]
+n=json.dumps(exchange_rates_string).find('data')
+for el in json.dumps(exchange_rates_string)[n+7:-1]\
+.replace('[{','').replace('}]','').split('}, {'):
+    print(el)
+
+dhtml('R DataFrames in Python Notebooks')
+
+# Commented out IPython magic to ensure Python compatibility.
+# %run ../input/python-recipes/sage_call.py
+
+# Commented out IPython magic to ensure Python compatibility.
+# %sage_autorun \
+# %%r \
+# library('MASS'); data(Boston); n<-dim(Boston)[1] \
+# svg(filename='Rplots.svg',width=8,height=6,pointsize=12, \
+#     onefile=T,family='courier',bg='whitesmoke', \
+#     antialias=c('default','none','gray','subpixel')) \
+# plot(Boston[,'lstat'],col='#3636ff',type='o',pch=13,cex=.6) \
+# grid(); dev.off()
+
+# Commented out IPython magic to ensure Python compatibility.
+# %sage_autorun \
+# %%r \
+# svg(filename='Rplots.svg',width=8,height=6,pointsize=12, \
+#     onefile=T,family='courier',bg='ghostwhite', \
+#     antialias=c('default','none','gray','subpixel')) \
+# user<-'https://raw.githubusercontent.com/OlgaBelitskaya/' \
+# file<-paste0(user,'machine_learning_engineer_nd009/') \
+# file<-paste0(file,'master/Machine_Learning_Engineer_ND_P3/') \
+# file<-paste0(file,'customers.csv') \
+# customers<-read.csv(file) \
+# matplot(c(1:440),customers[,c(3,4,5,6,7,8)],type='l') \
+# legend('topright',colnames(customers[,c(3,4,5,6,7,8)]), \
+#        col=seq_len(6),pch=13,cex=.8) \
+# grid(); dev.off()
 
 dhtml('Danfo DataFrames')
 
