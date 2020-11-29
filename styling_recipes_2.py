@@ -51,7 +51,7 @@ dhtml('Code Modules & Element Classes','#ff36ff',f2,fs8)
 #     """var sec=Math.floor((now%(1000*60))/1000); """+\
 #     """var col='rgb('+(5+Math.abs(245-8*sec))+',0,'"""+\
 #     """+(250-Math.abs(245-8*sec))+')'; """+\
-#     """iddoc.style.color=col;},1000);</script>"""
+#     """iddoc.style.color=col;},1000);</"""+"""script>"""
 #     display(HTML(style_str+h_str+script_str))
 
 # Commented out IPython magic to ensure Python compatibility.

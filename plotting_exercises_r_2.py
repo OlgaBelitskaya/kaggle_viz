@@ -9,7 +9,14 @@ Original file is located at
 # Basic R Only
 """
 
-options(repr.plot.width=10,repr.plot.height=10)
+conn<-file("random_plotting.R")
+writeLines("#unlock for running in SageMathCell 
+#%%r
+#svg(filename='Rplots.svg',onefile=T,width=10,height=10,
+#    pointsize=12,family='times',bg='whitesmoke',
+#    antialias=c('default','none','gray','subpixel'))
+options(repr.plot.width=10,repr.plot.height=10,
+        repr.plot.bg='whitesmoke')
 a<-.01*sample(30:99,1); b<-.01*sample(30:99,1)
 c<-.01*sample(30:99,1); d<-max(a,2*b,3*c)
 cat(c('a =',a,'b =',b,'c =',c,'\n'))
@@ -30,55 +37,125 @@ plot(b*x2,b*y2,type='o',pch=sample(0:18,1),cex=.2,
 plot(c*x3,c*y3,type='o',pch=sample(0:18,1),cex=.3,
      col=coli(),lwd=1,xlim=c(-d,d),ylim=c(-d,d),
      xlab='x',ylab='y',fg=c0,col.axis=c0,col.lab=c0)
-     grid(col=c0)
+grid(col=c0)
+#dev.off()",conn)
+
+source('random_plotting.R')
 
 """# Python & R"""
 
-library(IRdisplay); library(reticulate)
+conn<-file("rpy_modules.R")
+writeLines("library(IRdisplay); library(reticulate)
 library(imager); library(ggplot2); library(reshape2)
-pl<-c('matplotlib','pandas','networkx')
+pl<-c('matplotlib','seaborn','pandas','networkx',
+      'tensorflow','sklearn','h5py')
 for (p in pl) {py_install(p)} 
 np<-import('numpy'); pd<-import('pandas')
-pl<-import('pylab'); nx<-import('networkx')
+pl<-import('pylab'); sn<-import('seaborn')
+sl<-import('sklearn'); tf<-import('tensorflow')
+h5<-import('h5py'); nx<-import('networkx')",conn)
 
-path<-paste0('https://raw.githubusercontent.com/OlgaBelitskaya/',
-             'machine_learning_engineer_nd009/master/')
-path<-paste0(path,'Machine_Learning_Engineer_ND_P3/customers.csv')
-customers<-pd$read_csv(path); customers<-customers[,3:8]
-options(repr.plot.width=10,repr.plot.height=7)
-matplot(1:440,customers,type='l')
+source('rpy_modules.R')
 
-customers$N<-1:440; customers<-melt(customers,id.vars='N')
-ggplot(customers,aes(N,value,fill=variable))+geom_area()+
-    scale_fill_brewer(palette='Set1')+theme_bw()
+conn<-file("pd_csv_plot.R")
+writeLines("
+options(repr.plot.width=10,repr.plot.height=5,
+        repr.plot.bg='whitesmoke')
+pd_csv_matplot<-function(url,startcol,endcol)
+    {df<-pd$read_csv(url); df<-df[,startcol:endcol]
+     matplot(1:440,df,type='l')}
+pd_csv_ggplot<-function(url,startcol,endcol,palette)
+    {df<-pd$read_csv(url); df<-df[,startcol:endcol]
+     df$N<-1:dim(df)[1]; df<-melt(df,id.vars='N')
+     ggplot(df,aes(N,value,fill=variable))+geom_area()+
+     scale_fill_brewer(palette=palette)+theme_bw()}
+",conn)
 
+source('pd_csv_plot.R')
+str<-c('https://raw.githubusercontent.com/OlgaBelitskaya/',
+       'machine_learning_engineer_nd009/master/',
+       'Machine_Learning_Engineer_ND_P3/customers.csv')
+url<-paste(str,collapse='')
+startcol<-3; endcol<-8; palette<-'Set1'
+pd_csv_matplot(url,startcol,endcol)
+pd_csv_ggplot(url,startcol,endcol,palette)
+
+conn<-file("networkx_multidigraph_pyplot.R")
+writeLines("
+networkx_graphplot<-
+function(edge_list,sfig,sarrow,snode,sfont)
+    {g<-nx$MultiDiGraph()
+     pl$figure(figsize=c(sfig,sfig))
+     g$add_edges_from(edge_list)
+     pos<-nx$shell_layout(g)
+     nx$draw_networkx_edges(
+         g,pos,width=3,edge_color='silver',
+         alpha=.5,arrowsize=sarrow,arrowstyle='-|>')
+     nx$draw_networkx_nodes(
+         g,pos,node_size=snode,alpha=.7,
+         node_color='steelblue',node_shape='h')
+     nx$draw_networkx_labels(
+         g,pos,font_size=sfont,font_weight='bold')
+     pl$axis('off')
+     pl$title('MultiDiGraph & Pyplot in R')
+     file_name<-paste0('rpy_multidigraph_plot',
+                       sample(1:9999999,1),'.png')
+     pl$savefig(file_name)
+     im<-load.image(file_name)
+     options(repr.plot.width=sfig,repr.plot.height=sfig,
+             repr.plot.bg='whitesmoke')
+     par(mar=c(0,0,0,0)); plot(im,axes=FALSE)}
+",conn)
+
+source("networkx_multidigraph_pyplot.R")
 edge_list<-list(c('♔','♕'),c('♔','♖'),c('♔','♗'),
                 c('♔','♘'),c('♕','♘'),c('♖','♘'),
                 c('♖','♚'),c('♖','♛'),c('♗','♖'),
                 c('♗','♚'),c('♘','♛'),c('♚','♛'),
                 c('♛','♜'),c('♛','♝'),c('♜','♝'),
                 c('♜','♞'))
-g<-nx$MultiDiGraph(); pl$figure(figsize=c(10,10))
-g$add_edges_from(edge_list); pos<-nx$shell_layout(g) 
-nx$draw_networkx_edges(g,pos,width=3,alpha=.5,
-                       edge_color='silver',
-                       arrowsize=30,arrowstyle='-|>')
-nx$draw_networkx_nodes(g,pos,node_size=1500,alpha=.7,
-                       node_color='steelblue',node_shape='h')
-nx$draw_networkx_labels(g,pos,font_size=25,font_weight='bold')
-pl$axis('off'); pl$title('Matplotlib in R')
-pl$savefig('rpy_plot1.png'); im<-load.image('rpy_plot1.png')
-
-options(repr.plot.width=10,repr.plot.height=10)
-par(mar=c(0,0,0,0)); plot(im,axes=F)
+sfig<-10; sarroow<-30; snode<-1500; sfont<-25
+networkx_graphplot(edge_list,sfig,sarroow,snode,sfont)
 
 """# JavaScript & HTML & R"""
+
+conn<-file('embedding_html.R')
+writeLines("
+embedding_html_string<-
+function(html_str,width,height)
+    {html_str<-paste(
+         as.character(html_str),collapse='\n')
+     randi<-sample(1:9999999,1)
+     file_name<-paste0('chart',randi,'.html')
+     write.table(html_str,file=file_name,quote=FALSE,
+                 col.names=FALSE,row.names=FALSE)
+     str<-paste0('<div id=\x22',randi,
+            '\x22><iframe src=\x22chart',randi,
+            '.html\x22 height=',height,
+            ' width=',width,'>','</iframe></div>')
+     display_html(str)}
+embedding_html_page<-
+function(file_path,width,height)
+    {html_str<-paste(
+         readLines(file_path,warn=FALSE),collapse='\n')
+     randi<-sample(1:9999999,1)
+     file_name<-paste0('chart',randi,'.html')
+     write.table(html_str,file=file_name,quote=FALSE,
+                 col.names=FALSE,row.names=FALSE)
+     str<-paste0('<div id=\x22',randi,
+                 '\x22><iframe src=\x22chart',randi,
+                 '.html\x22 height=',height,
+                 ' width=',width,'>','</iframe></div>')
+     display_html(str)}
+",conn)
+
+source("embedding_html.R")
 
 html_str<-"
 <script type='text/javascript' 
         src='https://www.gstatic.com/charts/loader.js'>
 </script>
-<div id='gchart' style='width:500px; height:500px;'>
+<div id='gchart' style='width:600px; height:600px;'>
 </div><script>
 function get_int(xmin,xmax) {
     return Math.floor(Math.random()*(xmax-xmin+1))+xmin;};
@@ -117,11 +194,7 @@ function drawChart() {
                         .LineChart(document.getElementById('gchart')); 
     chart.draw(data,options);};
 </script>"
-html_str<-paste(as.character(html_str),collapse='\n')
-write.table(html_str,file='gchart.html',
-            quote=FALSE,col.names=FALSE,row.names=FALSE)
-display_html("<div id='data1'><iframe src='gchart.html' 
-             height='550' width='520'></iframe></div>")
+embedding_html_string(html_str,620,650)
 
 html_str<-"
 <style>
@@ -133,7 +206,7 @@ html_str<-"
 <svg id='d3chart' style='background-color:slategray;'></svg>
 <script>
 var n=630,m0=35,m={top:m0,right:m0,bottom:m0,left:m0},
-    w=500-m.left-m.right,h=500-m.top-m.bottom; 
+    w=600-m.left-m.right,h=600-m.top-m.bottom; 
 var xScale=d3.scaleLinear().domain([-3,3]).range([0,w]), 
     yScale=d3.scaleLinear().domain([-3,3]).range([h,0]);
 function make_x_gridlines() {
@@ -172,11 +245,7 @@ svg.selectAll('.point2').data(data2)
    .styleTween('fill',function(){
         return d3.interpolate('#ff3636','#3636ff')});
 </script>"
-html_str<-paste(as.character(html_str),collapse='\n')
-write.table(html_str,file='d3.html',
-            quote=FALSE,col.names=FALSE,row.names=FALSE)
-display_html("<div id='data2'><iframe src='d3.html' 
-             height='550' width='520'></iframe></div>")
+embedding_html_string(html_str,620,650)
 
 html_str<-"
 <script src='https://code.highcharts.com/highcharts.js'></script>
@@ -203,11 +272,7 @@ Highcharts.chart('highchart', {
     title:{text:'Random Parametric Plot: a,b = '+[a,b].toString()},
     credits:{enabled:false},legend:{enabled:false},series:series});
 </script>"
-html_str<-paste(as.character(html_str),collapse='\n')
-write.table(html_str,file='highcharts.html',
-            quote=FALSE,col.names=FALSE,row.names=FALSE)
-display_html("<div id='data3'><iframe src='highcharts.html' 
-             height='620' width='520'></iframe></div>")
+embedding_html_string(html_str,620,720)
 
 html_str<-"
 <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
@@ -249,37 +314,31 @@ var a=get_int(5,9),b=get_int(10,14),c=get_int(15,19),
 var q=get_int(3,15),n=get_int(3,15);
 for (var k=1; k<2*q+1; k++) {plt(k);}
 </script>"
-html_str<-paste(as.character(html_str),collapse='\n')
-write.table(html_str,file='plotly.html',
-            quote=FALSE,col.names=FALSE,row.names=FALSE)
-display_html("<div id='data4'><iframe src='plotly.html' 
-             height='420' width='520'></iframe></div>")
+embedding_html_string(html_str,620,520)
 
 """# HTML Recipes"""
 
-file_path<-'../input/html-recipes/rotated_graph_path.html'
-html_str<-paste(readLines(file_path,warn=FALSE),
-                collapse='\n')
-write.table(html_str,file='rotated_graph_path.html',
-            quote=FALSE,col.names=FALSE,row.names=FALSE)
-display_html("<div id='data5'>
-<iframe src='rotated_graph_path.html' height='1150' width='530'>
-</iframe></div>")
+file_path<-
+'../input/html-recipes/rotated_graph_path.html'
+embedding_html_page(file_path,620,1120)
 
 """# SageMathCell & HTML & R
 In SageMathCell we can plot this using `Rplots.svg`.
 """
 
+#unlock for running in SageMathCell
 T<-seq(from=0,to=2*pi,by=.01*pi)
 col<-function(i) {rgb(.005*i,0,1-.005*i)}
 curve<-function(t) {list(sin(2*t),sin(5*t))}
 X<-sapply(T,curve)[1,]; Y<-sapply(T,curve)[2,] 
-#svg(filename="Rplots.svg",width=5,height=5,
-#    pointsize=12,onefile=T,family="sans",bg="black",
-#    antialias=c("default","none","gray","subpixel"))
+#svg(filename='Rplots.svg',onefile=TRUE,width=10,height=10,
+#    pointsize=12,family='times',bg='black',
+#    antialias=c('default','none','gray','subpixel'))
+options(repr.plot.width=10,repr.plot.height=10,
+        repr.plot.bg='black')
 c0<-'slategray'
 for(i in 1:200){
-    plot(X[i],Y[i],pch=13,cex=.9,
+    plot(X[i],Y[i],pch=13,cex=1.5,
          xlim=c(-1.2,1.2),ylim=c(-1.2,1.2),
          col=col(i),xlab='x',ylab='y',
         fg=c0,col.axis=c0,col.lab=c0)
@@ -288,7 +347,7 @@ grid(col=c0)
 #dev.off()
 
 shtml<-'<div style="border:10px double white; 
-                    width:520px; height:920px; overflow:auto; 
+                    width:620px; height:920px; overflow:auto; 
                     padding:10px; background-color:ghostwhite">
 <iframe src="https://olgabelitskaya.github.io/kaggle_smc/kaggle_smc2.html" 
         width="99%" height="99%"/></div>'
