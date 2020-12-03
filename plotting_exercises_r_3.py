@@ -9,20 +9,38 @@ Original file is located at
 ## R Basic Only
 """
 
-options(repr.plot.width=10,repr.plot.height=10)
+conn<-file("random_plotting4.R")
+writeLines("#unlock for running in SageMathCell 
+#%%r
+#svg(filename='Rplots.svg',onefile=T,width=10,height=10,
+#    pointsize=12,family='times',bg='black',
+#    antialias=c('default','none','gray','subpixel'))
+options(repr.plot.width=10,repr.plot.height=10,
+        repr.plot.bg='black')
 a<-(.5+runif(1))*sample(c(-1,1),1); b<-sample(6:12,1)
 c<-.001*sample(1:99,1)*sample(c(-1,1),1); d<-sample(4:8,1)
 t<-seq(0,24*pi,len=24*18)
-c0<-'slategray'; c1<-rgb(runif(1),runif(1),runif(1))
+c0<-'whitesmoke'; c1<-rgb(runif(1),runif(1),runif(1))
 x<-sin(t/6)+a*sin(b*t)*cos(t)+c*sin(b*t)
 y<-cos(t/6)+a*sin(b*t)*sin(t)+c*cos(d*b*t)
-cat(c('a =',a,'b =',b,'c =',c,'d =',d,'color:',c1,'\n')) 
-plot(x,y,type='o',cex=.6,col=c0,lwd=3); par(new=T)
-plot(x,y,type='o',cex=.5,col=c1,xlab='x',ylab='y',
+cat(paste0('a=',a,'; b=',b,'; c=',c,'; d=',d,'; color:',c1,'\n'))
+plot(x,y,type='o',cex=.4,col=c0,lwd=3); par(new=T)
+plot(x,y,type='o',cex=.3,col=c1,xlab='x',ylab='y',
      fg=c0,col.axis=c0,col.lab=c0)
 grid(col=c0)
+#dev.off()",conn)
 
-tmin<--pi; tmax<-pi; n<-36; t<-seq(0,2*pi,len=180)
+source('random_plotting4.R')
+
+conn<-file("random_plotting5.R")
+writeLines("#unlock for running in SageMathCell 
+#%%r
+#svg(filename='Rplots.svg',onefile=T,width=10,height=10,
+#    pointsize=12,family='times',bg='black',
+#    antialias=c('default','none','gray','subpixel'))
+options(repr.plot.width=10,repr.plot.height=10,
+        repr.plot.bg='black')
+tmin<--pi; tmax<-pi; n<-36; t<-seq(0,2*pi,len=360)
 c0<-'slategray'
 for (i in 1:n) {
     f<-(sample(8:11,1)+.9*cos(sample(12:24,1)*t+
@@ -35,11 +53,18 @@ for (i in 1:n) {
          cex=.3,lwd=.7,xlab='x',ylab='y',
          fg=c0,col.axis=c0,col.lab=c0); par(new=T)}
 grid(col=c0)
+#dev.off()",conn)
+
+source('random_plotting5.R')
 
 """## R Packages"""
 
-library(magrittr); library(VennDiagram); library(igraph)
+source('../input/r-recipes/rpy_modules.R')
 
+conn<-file("venn_plot.R")
+writeLines("
+options(repr.plot.width=10,repr.plot.height=10,
+        repr.plot.bg='slategray')
 cols<-c('#33ff33','#3333ff','#ffff33','#ff3333')
 venn.plot<-draw.quad.venn(
     area1=31,area2=31,area3=31,area4=31,
@@ -47,47 +72,54 @@ venn.plot<-draw.quad.venn(
     n123=2,n124=5,n134=2,n234=5,n1234=1,
     category=c('A','B','C','D'),
     fill=cols,cat.col=cols,cat.cex=3)
+",conn)
 
+source('venn_plot.R')
+
+conn<-file("graph_plot.R")
+writeLines("
+options(repr.plot.width=10,repr.plot.height=10,
+        repr.plot.bg='slategray')
+c0<-'white'; c1<-'#3333ff'; c2<-'#ff3333'
 edges<-c('A','B', 'A','C', 'A','F', 'B','C', 'B','D',
          'C','D', 'C','E', 'D','E', 'D','F', 'E','F')
 weights<-c(3,8,16,4,7,2,6,5,4,2)
 g<-graph(edges,directed=FALSE)%>%
-    set_edge_attr("weight",value=weights)
+    set_edge_attr('weight',value=weights)
 shortest_path<-get.shortest.paths(g,'A','F')
-E(g)$color<-"#3333ff"; c0<-"slategray"
-E(g,path=unlist(shortest_path$vpath))$color<-"#ff3333"
+E(g)$color<-c1
+E(g,path=unlist(shortest_path$vpath))$color<-c2
 plot(g,layout=layout_nicely(g),vertex.label.cex=2.5,
-     vertex.color="#3333ff",vertex.size=25,
+     vertex.color=c1,vertex.size=25,
      vertex.label.color=c0,vertex.frame.color=c0,
      edge.label.color=c0,edge.label=E(g)$weight,
      edge.label.cex=2.5,edge.width=E(g)$weight)
+",conn)
+
+source('graph_plot.R')
 
 """## Python & R"""
 
-library(IRdisplay); library(reticulate)
-library(imager)
-pl<-c('matplotlib','pandas','scikit-image',
-      'matplotlib_venn')
-for (p in pl) {py_install(p)} 
-np<-import('numpy'); pd<-import('pandas')
-pl<-import('pylab'); sm<-import('skimage')
-mp3d<-import('mpl_toolkits.mplot3d')
-ml<-import('matplotlib.lines')
-venn<-import('matplotlib_venn')
+file_path<-'../input/image-examples-for-mixed-styles'
+image_paths<-list.files(
+    file_path,recursive=TRUE,full.names=TRUE)
+file_name<-image_paths[10]; file_name
 
-fpath<-'../input/image-examples-for-mixed-styles'
-image_paths<-list.files(fpath,recursive=TRUE,full.names=TRUE)
-example<-load.image(image_paths[4])
-de<-dim(example)
+options(repr.plot.width=10,repr.plot.height=10,
+        repr.plot.bg='white')
+example<-load.image(file_name); de<-dim(example)
 example<-array_reshape(example,c(de[1],de[2],de[4]))
 gray_example<-sm$color$colorconv$rgb2grey(example)
-contours<-sm$measure$find_contours(gray_example,.75)
+contours<-sm$measure$find_contours(gray_example,.85)
 pl$figure(figsize=c(9,8)); pl$gca()$invert_yaxis()
 for (i in 1:length(contours)){
     pl$plot(contours[[i]][,1],contours[[i]][,2],lw=1)}
-pl$grid(); pl$savefig('rpy_plot1.png')
-im<-load.image('rpy_plot1.png')
-par(mar=c(0,0,0,0)); plot(im,axes=F)
+pl$grid()
+file_name_out<-paste0(
+    'rpy_plot',sample(1:9999999,1),'.png')
+pl$savefig(file_name_out)
+im<-load.image(file_name_out)
+par(mar=c(0,0,0,0)); plot(im,axes=FALSE)
 
 pl$figure(figsize=c(7,7))
 v=venn$venn2(subsets=c(5,7,3),set_labels=c('A','B'))
@@ -99,8 +131,11 @@ v$get_patch_by_id('01')$set_color('#3399ff')
 v$get_patch_by_id('11')$set_color('steelblue')
 for (text in v$set_labels){text$set_fontsize(20)}
 for (text in v$subset_labels){text$set_fontsize(20)}
-pl$savefig('rpy_plot1.png'); im<-load.image('rpy_plot1.png')
-par(mar=c(0,0,0,0)); plot(im,axes=F)
+file_name_out<-paste0(
+    'rpy_plot',sample(1:9999999,1),'.png')
+pl$savefig(file_name_out)
+im<-load.image(file_name_out)
+par(mar=c(0,0,0,0)); plot(im,axes=FALSE)
 
 X3<-Z3<-X4<-Z4<-Y5<-Z5<-seq(from=-5,to=5,by=.1)
 cylinder1<-function(p,q,X,Z){
@@ -132,7 +167,7 @@ labels<-c('$x^2/3^2+y^2/4^2=1$','$x^2/2^2-y^2/3^2=1$',
 XYZ<-function(i){
     np$array(np$loadtxt(files[i],delimiter=' ',unpack=TRUE))}
 fig<-pl$figure(figsize=c(10,10))
-ax<-fig$add_subplot(111,projection='3d')
+ax<-fig$add_subplot('111',projection='3d')
 for (i in 1:3){
     ax$scatter(XYZ(i)[1,],XYZ(i)[2,],XYZ(i)[3,],
                s=1,c=colors[i],marker='1')}
@@ -140,7 +175,10 @@ fl2D<-function(i){
     ml$Line2D(c(0,1),c(0,1),linestyle="none",
               c=colors[i],marker='1')}
 ax$legend(c(fl2D(1),fl2D(2),fl2D(3)),labels,loc=9)
-pl$savefig('rpy_plot1.png'); im<-load.image('rpy_plot1.png')
+file_name_out<-paste0(
+    'rpy_plot',sample(1:9999999,1),'.png')
+pl$savefig(file_name_out)
+im<-load.image(file_name_out)
 par(mar=c(0,0,0,0)); plot(im,axes=F)
 
 """## R & JavaScript & HTML"""
