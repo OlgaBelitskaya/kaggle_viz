@@ -100,28 +100,38 @@ source('graph_plot.R')
 
 """## Python & R"""
 
+conn<-file("py_image_contour.R")
+writeLines("
+image_contour<-function(file_name) {
+    options(repr.plot.width=10,repr.plot.height=10,
+            repr.plot.bg='white')
+    example<-load.image(file_name); de<-dim(example)
+    example<-array_reshape(example,c(de[1],de[2],de[4]))
+    gray_example<-sm$color$colorconv$rgb2grey(example)
+    contours<-sm$measure$find_contours(gray_example,.85)
+    pl$figure(figsize=c(9,8)); pl$gca()$invert_yaxis()
+    for (i in 1:length(contours)) {
+        pl$plot(contours[[i]][,1],contours[[i]][,2],lw=1)}
+    pl$grid()
+    file_name_out<-paste0(
+        'rpy_plot',sample(1:9999999,1),'.png')
+    pl$savefig(file_name_out)
+    im<-load.image(file_name_out)
+    par(mar=c(0,0,0,0)); plot(im,axes=FALSE)}
+",conn)
+
+source('py_image_contour.R')
 file_path<-'../input/image-examples-for-mixed-styles'
 image_paths<-list.files(
     file_path,recursive=TRUE,full.names=TRUE)
-file_name<-image_paths[10]; file_name
+file_name_example<-image_paths[10]
+image_contour(file_name_example)
 
+conn<-file("py_venn_example.R")
+writeLines("
 options(repr.plot.width=10,repr.plot.height=10,
         repr.plot.bg='white')
-example<-load.image(file_name); de<-dim(example)
-example<-array_reshape(example,c(de[1],de[2],de[4]))
-gray_example<-sm$color$colorconv$rgb2grey(example)
-contours<-sm$measure$find_contours(gray_example,.85)
-pl$figure(figsize=c(9,8)); pl$gca()$invert_yaxis()
-for (i in 1:length(contours)){
-    pl$plot(contours[[i]][,1],contours[[i]][,2],lw=1)}
-pl$grid()
-file_name_out<-paste0(
-    'rpy_plot',sample(1:9999999,1),'.png')
-pl$savefig(file_name_out)
-im<-load.image(file_name_out)
-par(mar=c(0,0,0,0)); plot(im,axes=FALSE)
-
-pl$figure(figsize=c(7,7))
+pl$figure(figsize=c(10,10))
 v=venn$venn2(subsets=c(5,7,3),set_labels=c('A','B'))
 v$get_label_by_id('10')$set_text('A & ¬B')
 v$get_label_by_id('01')$set_text('B & ¬A')
@@ -136,31 +146,41 @@ file_name_out<-paste0(
 pl$savefig(file_name_out)
 im<-load.image(file_name_out)
 par(mar=c(0,0,0,0)); plot(im,axes=FALSE)
+",conn)
 
+source('py_venn_example.R')
+
+conn<-file("py_surfaces_example.R")
+writeLines("
+options(repr.plot.width=10,repr.plot.height=10,
+        repr.plot.bg='white')
 X3<-Z3<-X4<-Z4<-Y5<-Z5<-seq(from=-5,to=5,by=.1)
-cylinder1<-function(p,q,X,Z){
+surface1<-function(p,q,X,Z){
     for (x in X){for (z in Z){
         y<-q*(1-x^2/p^2)^.5; v<-c(x,y,z,x,-y,z)
         if (sum(is.na(v))==0){
-            write.table(matrix(v,nrow=2,ncol=3,byrow=T),
-                        file ="cylinder1.csv",append=T,
-                        quote=F,col.names=F,row.names=F)}}}}
-cylinder2<-function(p,q,X,Z){
+            write.table(matrix(v,nrow=2,ncol=3,byrow=TRUE),
+                        file='surface1.csv',
+                        append=TRUE,quote=FALSE,
+                        col.names=FALSE,row.names=FALSE)}}}}
+surface2<-function(p,q,X,Z){
     for (x in X){for (z in Z){
         y<-q*(x^2/p^2-1)^.5; v<-c(x,y,z,x,-y,z)
         if (sum(is.na(v))==0){
-            write.table(matrix(v,nrow=2,ncol=3,byrow=T),
-                        file="cylinder2.csv",append=T,
-                        quote=F,col.names=F,row.names=F)}}}}
-cylinder3<-function(p,Y,Z){
+            write.table(matrix(v,nrow=2,ncol=3,byrow=TRUE),
+                        file='surface2.csv',
+                        append=TRUE,quote=FALSE,
+                        col.names=FALSE,row.names=FALSE)}}}}
+surface3<-function(p,Y,Z){
     for (y in Y){for (z in Z){
         x<-y^2/2/p; v<-c(x,y,z)
-        write.table(matrix(v,nrow=1,ncol=3,byrow=T),
-                    file ="cylinder3.csv",append=T,
-                    quote=F,col.names=F,row.names=F)}}}
-cylinder1(3,4,X3,Z3); cylinder2(2,3,X4,Z4); cylinder3(2,Y5,Z5)
+        write.table(matrix(v,nrow=1,ncol=3,byrow=TRUE),
+                    file='surface3.csv',
+                    append=TRUE,quote=FALSE,
+                    col.names=FALSE,row.names=FALSE)}}}
+surface1(3,4,X3,Z3); surface2(2,3,X4,Z4); surface3(2,Y5,Z5)
 
-files<-c('cylinder1.csv','cylinder2.csv','cylinder3.csv')
+files<-c('surface1.csv','surface2.csv','surface3.csv')
 colors<-c('#36ff36','#36ffff','#ff36ff')
 labels<-c('$x^2/3^2+y^2/4^2=1$','$x^2/2^2-y^2/3^2=1$',
           '$y^2=2*2*x$')
@@ -172,20 +192,25 @@ for (i in 1:3){
     ax$scatter(XYZ(i)[1,],XYZ(i)[2,],XYZ(i)[3,],
                s=1,c=colors[i],marker='1')}
 fl2D<-function(i){
-    ml$Line2D(c(0,1),c(0,1),linestyle="none",
+    ml$Line2D(c(0,1),c(0,1),linestyle='none',
               c=colors[i],marker='1')}
 ax$legend(c(fl2D(1),fl2D(2),fl2D(3)),labels,loc=9)
 file_name_out<-paste0(
     'rpy_plot',sample(1:9999999,1),'.png')
 pl$savefig(file_name_out)
 im<-load.image(file_name_out)
-par(mar=c(0,0,0,0)); plot(im,axes=F)
+par(mar=c(0,0,0,0)); plot(im,axes=FALSE)
+",conn)
+
+source('py_surfaces_example.R')
 
 """## R & JavaScript & HTML"""
 
+source("../input/r-recipes/embedding_html.R")
+
 html_str<-'<script src="//d3js.org/d3.v3.min.js"></script>
 <svg id="d3b02" style="background-color:#101050;"></svg><script>
-var width=250,height=250,ra=3*360,
+var width=300,height=300,ra=3*360,
     col=["silver","darkgray","slategray","darkslategray"],
     per=["40%","60%","80%","100%"];
 var svg=d3.select("#d3b02")
@@ -212,18 +237,14 @@ function raindrop(size){
          +"C"+-r+","+-r+" 0,"+-r+" 0,"+-3*r
          +"C0,"+-r+" "+r+","+-r+" "+r+",0"+"Z";};
 </script>'
-html_str<-paste(as.character(html_str),collapse="\n")
-write.table(html_str,file='d3chart.html',
-            quote=FALSE,col.names=FALSE,row.names=FALSE)
-display_html("<div id='data1'><iframe src='d3chart.html' 
-             height='520' width='520'></iframe></div>")
+embedding_html_string(html_str,620,620)
 
 html_str<-"
 <script src='https://code.highcharts.com/highcharts.js'></script>
 <script src='https://code.highcharts.com/highcharts-3d.js'></script>
 <script src='https://code.highcharts.com/modules/accessibility.js'>
 </script><figure class='highcharts-figure'>
-<div id='hich' style='width:500px; height:500px;'></div></figure><script>
+<div id='hich' style='width:530px; height:580px;'></div></figure><script>
 function randi(min,max) {return Math.floor(Math.random()*(max-min+1))+min;};
 var d=.005,l=5,n=3,a=randi(11,19),b=randi(24,64);
 function ar(k,a,b) {return Array(1280).fill(k).map((k,t)=>
@@ -275,8 +296,4 @@ var chart=new Highcharts.Chart({
   H.addEvent(chart.container,'mousedown',dragStart);
   H.addEvent(chart.container,'touchstart',dragStart);
 }(Highcharts));</script>"
-html_str<-paste(as.character(html_str),collapse="\n")
-write.table(html_str,file='hchart.html',
-            quote=FALSE,col.names=FALSE,row.names=FALSE)
-display_html("<div id='data1'><iframe src='hchart.html' 
-             height='560' width='560'></iframe></div>")
+embedding_html_string(html_str,620,650)
