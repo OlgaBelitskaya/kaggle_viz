@@ -125,6 +125,27 @@ dhtml('Animated Markdown Cells','#ff36ff',f2,fs8)
 dhtml('Animated Code Outputs','#ff36ff',f2,fs8)
 
 # Commented out IPython magic to ensure Python compatibility.
+# %%writefile example000.html
+# <script src='https://d3js.org/d3.v6.min.js'></script>
+# <style>
+# @import 'https://fonts.googleapis.com/css?family=Ewert';
+# .gewert {font-family:Ewert; color:white; text-align:center; width:99%;}
+# </style>
+# <h3 id='colorized1' class='gewert'>Color Interpolation in Text Displaying</h3>
+# <h3 id='colorized2' class='gewert'>Background Interpolation in Text Displaying</h3>
+# <script>
+# var tc=setInterval(function() {
+#     var now=new Date().getTime();
+#     var iddoc1=document.getElementById('colorized1');
+#     var iddoc2=document.getElementById('colorized2');
+#     iddoc1.style.color=d3.interpolateSinebow(now/1000);
+#     iddoc2.style.background=d3.interpolateRainbow(now/60000);},1)
+# </script>
+
+from IPython.display import IFrame
+IFrame(src='example000.html',width=650,height=100)
+
+# Commented out IPython magic to ensure Python compatibility.
 # %%writefile example001.html
 # <script src='https://d3js.org/d3.v6.min.js'></script>
 # run <button style='background:silver; width:200px; height:25px'
@@ -221,7 +242,7 @@ IFrame(src='example002.html',width=650,height=370)
 # style='width:120px; font-size:120%; color:#363636;
 # background-color:silver; text-align:center;'/><br/><br/>
 # <svg id='svg014' style='background-color:silver;'></svg>
-# <script>s=500;
+# <script>s=600;
 # colors=['#3636ff','#ff3636','#ff36ff',
 #         '#ffff36','#36ff36','#36ffff'];
 # function subpoint(a,b,m) {
@@ -250,9 +271,11 @@ IFrame(src='example002.html',width=650,height=370)
 #   svg.selectAll('path').remove();
 #   svg.selectAll('.curve').data(colors).join('path')
 #      .attr('d',(_,i)=>line(recursive_curve(s,m,i+n))+'z')
-#      .style('fill',d=>d).style('fill-opacity',.02)
-#      .style('stroke',d=>d).style('stroke-width',2); };
+#      .style('stroke',d=>d).style('stroke-width',3)
+#      .style('fill',d=>d).style('fill-opacity',.9)
+#      .transition().duration(10000)
+#      .style('fill',d=>d).style('fill-opacity',.02); };
 # </script>
 
 from IPython.display import IFrame
-IFrame(src='example003.html',width=550,height=570)
+IFrame(src='example003.html',width=650,height=670)
