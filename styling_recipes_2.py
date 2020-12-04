@@ -53,6 +53,31 @@ dhtml('Code Modules & Element Classes','#ff36ff',f2,fs8)
 #     """+(250-Math.abs(245-8*sec))+')'; """+\
 #     """iddoc.style.color=col;},1000);</"""+"""script>"""
 #     display(HTML(style_str+h_str+script_str))
+# 
+# def whtml(string,background_color='black',padding=2,
+#           font_family='Akronim',font_size_px=int(28),
+#           deg=int(120),percent=[0,33,67,100],
+#           colors=['magenta','orange','cyan','purple']):
+#     randi=random.randint(1,999999999)
+#     html_str="""<style>@import """+\
+#     """'https://fonts.googleapis.com/css?family="""+\
+#     font_family+"""';</style>"""+\
+#     """<div id='colorized_div' """+str(randi)+\
+#     """ style='background:"""+background_color+\
+#     """; padding:"""+str(padding)+"""vw;'>"""+\
+#     """<div style='background:linear-gradient("""+\
+#     str(deg)+"""deg, """+\
+#     colors[0]+""" """+str(percent[0])+"""%,"""+\
+#     colors[1]+""" """+str(percent[1])+"""%,"""+\
+#     colors[2]+""" """+str(percent[2])+"""%,"""+\
+#     colors[3]+""" """+str(percent[3])+"""%"""+\
+#     """); font-family:"""+font_family+"""; """+\
+#     """font-size:"""+str(font_size_px)+"""px; """+\
+#     """-webkit-background-clip:text; color:transparent;'> """+\
+#     string+"""</div></div>"""   
+#     display(HTML(html_str))
+
+dhtml('Colorized Code Outputs','#ff36ff',f2,fs8)
 
 # Commented out IPython magic to ensure Python compatibility.
 # %run cidhtml.py
@@ -60,6 +85,25 @@ dhtml('Code Modules & Element Classes','#ff36ff',f2,fs8)
 chtml('Style Applying to Classes of Elements')
 #looks fine in the working space and after the notebook execution
 idhtml('Style Applying to Id of Elements')
+
+corpus=['Have you already set your goals for the New Year?', 
+        'Do you want to lose ten kilos, '+\
+        'run a marathon or speak fluent English?', 
+        'Some experts believe that you need systems, not goals.', 
+        'A system is something you do on a regular basis. ',
+        'This means focusing on what you can control '+\
+        '(your actions) rather than what you can’t.',
+        'For example, do not focus on losing ten kilos.',
+        'Focus on shopping for healthy food and '+\
+        'cooking something light every day.',
+        'Do not focus on the marathon.',
+        'Focus on the training schedule.',
+        'Invent a system to improve your English, one step at a time.',
+        'Good luck!']
+corpus_str=' '.join(corpus)
+
+#cool, isn't it?
+whtml(corpus_str)
 
 dhtml('Animated Markdown Cells','#ff36ff',f2,fs8)
 
