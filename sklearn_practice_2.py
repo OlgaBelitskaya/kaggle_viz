@@ -7,9 +7,13 @@ Original file is located at
     https://colab.research.google.com/drive/1Y7lRvjuGBfTOua681t5htOo79VMZpr7h
 """
 
+!pip install lightning-python --user
+
 # Commented out IPython magic to ensure Python compatibility.
 # %run ../input/python-recipes/cidhtml.py
 # %run ../input/python-recipes/danfo_csv.py
+# %run ../input/python-recipes/display_dataframe.py
+# %run ../input/python-recipes/light_plots.py
 idhtml('Data & Code Modules')
 
 import sklearn as sl,pandas as pd,numpy as np,pylab as pl
@@ -21,6 +25,7 @@ from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.linear_model import HuberRegressor,Ridge
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.ensemble import GradientBoostingRegressor
+lgn=lightning_connect(False)
 
 url='https://raw.githubusercontent.com/OlgaBelitskaya/'+\
     'machine_learning_engineer_nd009/master/'+\
@@ -29,6 +34,15 @@ customers=pd.read_csv(url)
 columns=['Fresh','Milk','Grocery','Frozen',
          'Detergents_Paper','Delicatessen']
 danfo_table_csv(url,columns,11)
+
+display_dataframe(customers,'RdPu','tail',110,130)
+
+x,y='Fresh','Milk'
+value,size='Region','Delicatessen'
+cmap='RdPu'; label='Channel'
+light_scatter(lgn,url[:-13],url[-13:],
+              x,y,value,size,label,cmap,
+              w=680,h=300,sep=',')
 
 n_samples=1000; rng=np.random.RandomState(123)
 X1=rng.randn(n_samples,3)
