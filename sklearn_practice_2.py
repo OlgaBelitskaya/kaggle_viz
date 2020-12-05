@@ -34,13 +34,16 @@ n_samples=1000; rng=np.random.RandomState(123)
 X1=rng.randn(n_samples,3)
 noise=rng.normal(loc=0.,scale=.5,size=n_samples)
 y1=(2*X1[:,0]+np.sin(3*np.pi*X1[:,0])-noise)
+X2,y2=make_regression(
+    n_samples=1000,n_features=7,
+    n_targets=3,random_state=1)
 
 idhtml('Partial Dependence & Regression')
 
 gbdt_no_cst=HistGradientBoostingRegressor().fit(X1,y1)
 gbdt_cst=HistGradientBoostingRegressor(
     monotonic_cst=[1,0,0]).fit(X1,y1)
-pl.rcParams['figure.figsize']=(10,4)
+pl.rcParams['figure.figsize']=(12,4)
 disp=plot_partial_dependence(
     gbdt_no_cst,X1,features=[0],feature_names=['feature 0'],
     line_kw={'linewidth':2,'color':'darkred','label':'unconstrained'})
@@ -48,17 +51,17 @@ plot_partial_dependence(
     gbdt_cst,X1,features=[0],ax=disp.axes_,
     line_kw={'linewidth':2,'color':'darkblue','label':'constrained'})
 disp.axes_[0,0].plot(
-    X1[:,0],y1,'o',ms=1,c='darkslategray',
+    X1[:,0],y1,'o',ms=1,c='darkorchid',
     alpha=.7,zorder=-1,label='samples')
 disp.axes_[0,0].set_ylim(-5,5); disp.axes_[0,0].set_xlim(-1,1)
-pl.legend(); pl.grid()
+pl.legend(); pl.grid();
 
 idhtml('HuberRegressor vs Ridge & Strong Outliers')
 
 customers_cond=customers[customers<25000].dropna()
 X=customers_cond.Milk.values.reshape(-1,1)
 y=customers_cond.Delicatessen.values
-pl.figure(figsize=(10,4))
+pl.figure(figsize=(12,4))
 pl.plot(X,y,'o',c='darkred',ms=3,marker='*',alpha=.5)
 x=np.linspace(X.min(),X.max(),7)
 colors=['indigo','purple','magenta',
@@ -75,4 +78,76 @@ ridge.fit(X,y)
 coef_ridge=ridge.coef_
 coef_=ridge.coef_ *x+ridge.intercept_
 pl.plot(x,coef_,'blue',ls='--',label='ridge regression')
-pl.grid(); pl.legend(); pl.show()
+pl.grid(); pl.legend();
+
+idhtml('Multioutput Toy Regression')
+
+pl.figure(figsize=(12,6))
+colors=['darkred','darkorchid','darkblue']
+markers=['h','v','s']
+m=100
+py2=MultiOutputRegressor(
+    GradientBoostingRegressor(random_state=0))\
+    .fit(X2,y2).predict(X2)
+for i in range(3):
+    pl.plot(X2[:m,0],y2[:m,i],'o',c=colors[i],
+            ms=7,marker=markers[i],alpha=.3,
+            label='y%d'%i)
+    pl.plot(X2[:m,0],py2[:m,i],'o',c=colors[i],
+            ms=4,marker=markers[i],alpha=.8,
+            label='py%d'%i)
+pl.grid(); pl.legend();
+
+idhtml('Multioutput Real Regression')
+
+customers=customers.dropna()
+X=customers.iloc[:,int(2):int(6)].values
+y=customers.iloc[:,int(6):].values
+pl.figure(figsize=(12,6))
+colors=['darkred','darkblue']
+markers=['h','v']; m=100
+py=MultiOutputRegressor(
+    GradientBoostingRegressor(random_state=0))\
+    .fit(X,y).predict(X)
+for i in range(2):
+    pl.plot(X[:m,2],y[:m,i],'o',c=colors[i],
+            ms=7,marker=markers[i],alpha=.3,
+            label='y%d'%i)
+    pl.plot(X[:m,2],py[:m,i],'o',c=colors[i],
+            ms=3,marker=markers[i],alpha=.8,
+            label='py%d'%i)
+pl.xlim(0,15000); pl.ylim(0,5000)
+pl.legend(); pl.grid();
+
+idhtml('Robust Scaling')
+
+X=customers.iloc[:,int(2):].values
+robust_scaler=RobustScaler().fit(X)
+X_rs=robust_scaler.transform(X)
+X_irs=robust_scaler.inverse_transform(X_rs)
+pl.figure(figsize=(12,6))
+pl.plot(X[:,0]/10**4,X[:,1]/10**4,'o',c='darkred',
+        ms=5,marker='h',alpha=.3,label='real data')
+pl.plot(X_rs[:,0],X_rs[:,1],'o',c='darkblue',
+        ms=2,marker='h',alpha=.5,label='robust scaler')
+pl.plot(X_irs[:,0]/10**4,X_irs[:,1]/10**4,'o',c='darkorchid',
+        ms=2,marker='h',alpha=.7,label='inversed data')
+pl.xlim(-1,4); pl.ylim(-1,4); pl.grid();
+
+idhtml('Robust Scaling & Multioutput Regression')
+
+X,y=X_rs[:,:int(4)],X_rs[:,int(4):]
+pl.figure(figsize=(12,6))
+colors=['darkred','darkblue']
+markers=['h','v']; m=100
+py=MultiOutputRegressor(
+    GradientBoostingRegressor(random_state=0))\
+    .fit(X,y).predict(X)
+for i in range(2):
+    pl.plot(X[:m,2],y[:m,i],'o',c=colors[i],
+            ms=7,marker=markers[i],alpha=.3,
+            label='y%d'%i)
+    pl.plot(X[:m,2],py[:m,i],'o',c=colors[i],
+            ms=3,marker=markers[i],alpha=.8,
+            label='py%d'%i)
+pl.grid(); pl.xlim(-1,4); pl.ylim(-1,4); pl.legend();
