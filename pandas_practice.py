@@ -45,10 +45,10 @@ pl.show()
 
 fig=pl.figure(figsize=(10,4))
 ax=fig.add_subplot('111')
-data.iloc[:,int(1):].plot.area(
+data.iloc[:,int(2):].plot.area(
     stacked=False,ax=ax,cmap='Spectral')
 data_mean=pd.DataFrame(
-    data.iloc[:,int(1):].mean().round()).T
+    data.iloc[:,int(2):].mean().round()).T
 data_mean.index=['mean']
 pd.plotting.table(ax,data_mean,loc='top')
 pl.grid();
@@ -124,33 +124,39 @@ dhtml('Danfo DataFrames')
 # %%writefile danfo_csv.py
 # from IPython.core.display import display,HTML
 # 
-# def danfo_table_csv(url):
+# def danfo_table_csv(url,columns,header_font_size):
 #     html_str="""<html><head><meta charset='UTF-8'>"""+\
 #     """<meta name='viewport' """+\
 #     """content='width=device-width,initial-scale=1.0'>"""+\
 #     """<script src='https://cdn.jsdelivr.net/npm/"""+\
-#     """danfojs@0.1.1/dist/index.min.js'> </script></head>"""+\
-#     """<body><h1>CSV =>>> Danfo DataFrames</h1>"""+\
+#     """danfojs@0.1.1/dist/index.min.js'></script></head>"""+\
+#     """<div><p>&nbsp; CSV =>>> Danfo DataFrames</p>"""+\
 #     """<div id='div015_1'></div><script>"""+\
-#     """var url='"""+url+"""';"""+\
+#     """var url='"""+url+"""'; """+\
 #     """dfd.read_csv(url)"""+\
-#     """   .then(df=>{df.plot('div015_1').table()})"""+\
+#     """   .then(df=>{df.loc({columns:"""+str(columns)+\
+#     """}).plot('div015_1').table({header_style:"""+\
+#     """{font:{size:"""+str(header_font_size)+"""}}})})"""+\
 #     """   .catch(err=>{console.log(err);})"""+\
-#     """</script></body></html>"""
+#     """</script></div></html>"""
 #     display(HTML(html_str))
 #     
-# def danfo_chart_csv(url,columns):
+# def danfo_chart_csv(url,columns,line_width,title):
 #     html_str="""<html><head><meta charset='UTF-8'>"""+\
 #     """<meta name='viewport' """+\
 #     """content='width=device-width,initial-scale=1.0'>"""+\
 #     """<script src='https://cdn.jsdelivr.net/npm/"""+\
 #     """danfojs@0.1.1/dist/index.min.js'> </script></head>"""+\
-#     """<body><h1>CSV =>>> Danfo DataFrames</h1>"""+\
+#     """<body><p>&nbsp; CSV =>>> Danfo DataFrames</p>"""+\
 #     """<div id='div015_2'></div><script>"""+\
-#     """var url='"""+url+"""';"""+\
-#     """dfd.read_csv(url)"""+\
-#     """   .then(df=>{df.plot('div015_2').line("""+\
-#     """   {columns:"""+str(columns)+"""})})"""+\
+#     """var url='"""+url+"""'; """+\
+#     """dfd.read_csv(url).then(df=>{var layout={"""+\
+#     """  title:'"""+title+\
+#     """',xaxis:{title:'columns'},"""+\
+#     """  yaxis:{title:'value'}}; """+\
+#     """  df.plot('div015_2').line({"""+\
+#     """line:{width:"""+str(line_width)+"""},"""+\
+#     """columns:"""+str(columns)+""",layout:layout})})"""+\
 #     """   .catch(err=>{console.log(err);})"""+\
 #     """</script></body></html>"""
 #     display(HTML(html_str))
@@ -160,8 +166,13 @@ dhtml('Danfo DataFrames')
 url='https://raw.githubusercontent.com/OlgaBelitskaya/'+\
     'machine_learning_engineer_nd009/master/'+\
     'Machine_Learning_Engineer_ND_P3/customers.csv'
-danfo_table_csv(url)
-
 columns=['Fresh','Milk','Grocery','Frozen',
          'Detergents_Paper','Delicatessen']
-danfo_chart_csv(url,columns)
+danfo_table_csv(url,columns,10)
+
+danfo_chart_csv(url,columns,1,'Customers')
+
+from IPython.display import IFrame
+IFrame(src='https://olgabelitskaya.github.io/'+\
+       'instagram15.html',
+       width=680,height=670)
