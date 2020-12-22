@@ -12,21 +12,49 @@ Original file is located at
 # %run ../input/python-recipes/embedding_html_string.py
 dhtml('Mapping')
 
-import pandas as pd,pylab as pl
+import requests,json,numpy as np,pylab as pl
+url='http://overpass-api.de/api/interpreter'
+query="""
+[out:json];
+area['ISO3166-1'='DE'][admin_level=2];
+(node['amenity'='biergarten'](area);
+ way['amenity'='biergarten'](area);
+ rel['amenity'='biergarten'](area);
+);
+out center;
+"""
+response=requests.get(url,params={'data':query})
+data=response.json(); coords=[]
+for element in data['elements']:
+    if element['type']=='node':
+        lon=element['lon']; lat=element['lat']
+        coords.append((lon,lat))
+    elif 'center' in element:
+        lon=element['center']['lon']
+        lat=element['center']['lat']
+        coords.append((lon,lat))
+coords=np.array(coords)
+fig=pl.figure(figsize=(10,5))
+pl.plot(coords[:,0],coords[:,1],
+        'o',ms=.3,color='darkmagenta')
+pl.title('Biergarten in Germany'); pl.grid()
+pl.xlabel('Longitude'); pl.ylabel('Latitude')
+pl.axis('equal'); pl.tight_layout(); pl.show()
 
+import pandas as pd,pylab as pl
 file_path='../input/geodata-for-exercises/'
 file_name='worldcitiespop.txt'
-data=pd.read_csv(file_path+file_name,
-                 encoding='latin-1',
-                 low_memory=False)
+data=pd.read_csv(
+    file_path+file_name,encoding='latin-1',
+    low_memory=False)
 fig=pl.figure(figsize=(10,5))
 ax=fig.add_subplot('111')
 pl.plot(data.Longitude,data.Latitude,',',
-        c=pl.cm.Pastel1_r(.7));
+        c=pl.cm.Pastel1_r(.7))
+pl.tight_layout(); pl.show()
 
 from mpl_toolkits.basemap import Basemap
 import scipy.ndimage.filters,numpy as np
-
 locations=data[['Longitude','Latitude']].values
 m=Basemap(projection='mill',
           llcrnrlat=-65,urcrnrlat=85,
@@ -46,9 +74,9 @@ z=scipy.ndimage.filters\
 
 fig=pl.figure(figsize=(10,6))
 m.drawcoastlines()
-m.imshow(z,origin='lower',
-         extent=[x0,x1,y0,y1],
-         cmap=pl.get_cmap('Pastel1_r'));
+m.imshow(z,origin='lower',extent=[x0,x1,y0,y1],
+         cmap=pl.get_cmap('Pastel1_r'))
+pl.tight_layout(); pl.show()
 
 dhtml('D3 Mapping')
 
@@ -89,7 +117,7 @@ file='world_map.html'
 with open(file,'r') as f:
     html_str=f.read()
     f.close()
-embedding_html_string(html_str,530,350,1)
+embedding_html_string(html_str,680,350,1)
 
 dhtml('Highcharts Mapping')
 
@@ -126,4 +154,4 @@ file='highcharts_euromap.html'
 with open(file,'r') as f:
     html_str=f.read()
     f.close()
-embedding_html_string(html_str,530,530,2)
+embedding_html_string(html_str,680,530,2)
