@@ -98,31 +98,53 @@ idhtml('Code Modules, Setting, & Functions')
 #     s1='<div id="imgs_gif"><img src="'
 #     s2='" height="400" width="400"></img></div>'
 #     display(HTML(s1+file_name+s2))
+#     return imgs
 
 idhtml('Coordinates` Interpolation')
 
 # Commented out IPython magic to ensure Python compatibility.
 # %run black_white_animation.py
-create_display_gif()
+imgs=create_display_gif()
+
+idhtml('With Color Interpolation')
+
+steps=60
+col1=np.array([np.random.random(),0,.9-.4*np.random.random()])
+col2=np.array([0.,np.random.random(),.9-.4*np.random.random()])
+colors=np.vstack(
+     [interpolate_hypersphere(col1,col2,steps),
+      interpolate_hypersphere(col2,col1,steps)])
+colimgs=[np.array(
+    [el*colors[i] if el<.9 else np.ones(3) 
+     for el in imgs[i].reshape(imgs[i].shape[0]**2)])\
+     .reshape(imgs[i].shape[0],imgs[i].shape[0],3)
+      for i in range(imgs.shape[0])]
+file_name2='pic2.gif'
+imageio.mimsave(file_name2,colimgs)
+s1='<div id="imgs_gif2"><img src="'
+s2='" height="400" width="400"></img></div>'
+display(HTML(s1+file_name2+s2))
+
+idhtml('PNG Images` Interpolation')
 
 # Commented out IPython magic to ensure Python compatibility.
 # %run black_white_animation.py
 file1,file2='03_001.png','03_002.png'
 coords1,coords2=preprocess_img(file1,file2)
-coordsn=[]; steps=60
+coordsn=[]; img_size_out=156
 for el in [coords1,coords2]:
     fx=el[:,0]; fy=el[:,1]
     fx=.951*(fx-1.051*fx.min())/(fx.max()-fx.min())
     fy=.951*(fy-1.051*fy.min())/(fy.max()-fy.min())
     el=np.array([[fx[i],fy[i]] for i in range(len(fx))])
     coordsn.append(el)
-coordsn=np.array(coordsn); img_size_out=156
+coordsn=np.array(coordsn)
 coords_int=np.vstack(
     [interpolate_hypersphere(coordsn[1],coordsn[0],steps),
      interpolate_hypersphere(coordsn[0],coordsn[1],steps)])
 imgs=create_images(coords_int,img_size_out)
-file_name2='pic2.gif'
-imageio.mimsave(file_name2,imgs)
-s1='<div id="imgs_gif2"><img src="'
+file_name3='pic3.gif'
+imageio.mimsave(file_name3,imgs)
+s1='<div id="imgs_gif3"><img src="'
 s2='" height="400" width="400"></img></div>'
-display(HTML(s1+file_name2+s2))
+display(HTML(s1+file_name3+s2))
