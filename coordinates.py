@@ -7,7 +7,8 @@ Original file is located at
     https://colab.research.google.com/drive/1l_C64FHOxGPKlfqVxH9hA2Etgk7BvA97
 """
 
-!pip install git+https://github.com/tensorflow/docs
+!python3 -m pip install git+https://github.com/tensorflow/docs \
+--user --quiet --no-warn-script-location
 
 # Commented out IPython magic to ensure Python compatibility.
 from IPython.display import display,HTML
@@ -103,9 +104,10 @@ ax.set_xlim([-1,1]); ax.set_ylim([-1,1])
 ax.set_zlim([-1,1]); ax.set_axis_off()
 
 dhtml('Polyhedrons')
-#{Cuboctahedron,GreatRhombicosidodecahedron,GreatRhombicuboctahedron,Icosidodecahedron,
-#SmallRhombicosidodecahedron,SmallRhombicuboctahedron,SnubCube,SnubDodecahedron,TruncatedCube,
-#TruncatedDodecahedron,TruncatedIcosahedron,TruncatedOctahedron,TruncatedTetrahedron}
+#{Cuboctahedron,GreatRhombicosidodecahedron,GreatRhombicuboctahedron,
+#Icosidodecahedron,SmallRhombicosidodecahedron,SmallRhombicuboctahedron,
+#SnubCube,SnubDodecahedron,TruncatedCube,TruncatedDodecahedron,
+#TruncatedIcosahedron,TruncatedOctahedron,TruncatedTetrahedron}
 
 dfv=pd.read_csv(path+'TruncatedIcosahedron.csv')
 dfe=pd.read_csv(path+'TruncatedIcosahedron2.csv')
