@@ -21,30 +21,28 @@ dhtml('Interactive Data Presentation',c10,f2,fs7)
 
 def pd_style(file_path,file,num):
     table_style=\
-    [dict(selector="th",
-          props=[("font-size","12pt")]),
-     dict(selector="td",
-          props=[("padding","0em 0em")]),
-     dict(selector="th:hover",
-          props=[("color","slategray"),
-                 ("font-size","16pt")]),
-     dict(selector="tr:hover td:hover",
-          props=[("max-width","200px"),
-                 ("color","darkslategray"),
-                 ("font-color","slategray"),
-                 ("font-size","16pt")])]
+    [dict(selector='th',props=[('font-size','12pt')]),
+     dict(selector='td',props=[('padding','0em 0em')]),
+     dict(selector='th:hover',
+          props=[('color','slategray'),
+                 ('font-size','16pt')]),
+     dict(selector='tr:hover td:hover',
+          props=[('max-width','200px'),
+                 ('color','darkslategray'),
+                 ('font-color','slategray'),
+                 ('font-size','16pt')])]
     df=pd.read_csv(file_path+file)
     display(df.head(num).T.style\
-              .background_gradient("cool",axis=1)\
-              .set_properties(**{"max-width":"80px",
-                                 "font-size":"1pt"})\
-              .set_caption(dhtml("Table Exploration",
-                                 c10,f2,fs7))\
+              .background_gradient('cool',axis=1)\
+              .set_properties(
+        **{'max-width':'80px','font-size':'1pt'})\
+              .set_caption(dhtml(
+        'Table Exploration',c10,f2,fs7))\
               .set_precision(2)\
               .set_table_styles(table_style))
 
 file_path1='../input/image-examples-for-mixed-styles/'
-file1='beethoven.csv'; num1=12
+file1='beethoven.csv'; num1=15
 pd_style(file_path1,file1,num1)
 
 dhtml('Interactive Image Presentation',c10,f2,fs7)
@@ -66,18 +64,18 @@ dhtml('Interactive Image Presentation',c10,f2,fs7)
 #         fig.data[step-1].visible=False
 #     fig.data[0].visible=True
 #     for i in range(len(fig.data)):
-#         step=dict(method="update",
-#                   args=[{"visible":[False]*len(fig.data)}])
-#         step["args"][0]["visible"][i]=True
+#         step=dict(method='update',
+#                   args=[{'visible':[False]*len(fig.data)}])
+#         step['args'][0]['visible'][i]=True
 #         steps.append(step)
-#     sliders=[dict(active=0,pad={"t":5},steps=steps)]
-#     fig.update_layout(width=500,height=250,
-#                       sliders=sliders,
-#                       template='plotly_dark',
-#                       title_text="Image Examples",
-#                       title_font=dict(size=12))
+#     sliders=[dict(active=0,pad={'t':5},steps=steps)]
+#     fig.update_layout(
+#         width=700,height=350,sliders=sliders,
+#         template='plotly_dark',
+#         title_text='Image Examples',
+#         title_font=dict(size=12))
 #     fig.update_xaxes(showticklabels=False)\
-#     .update_yaxes(showticklabels=False)
+#        .update_yaxes(showticklabels=False)
 #     return fig
 
 # Commented out IPython magic to ensure Python compatibility.
@@ -92,7 +90,7 @@ file='../input/html-recipes/glinechart.html'
 with open(file,'r') as f:
     html_str=f.read()#.replace('\n','') 
     f.close()
-HTML(html_str)
+display(HTML(html_str))
 
 dhtml('External Interactive Code Execution',c10,f2,fs7)
 
@@ -105,7 +103,8 @@ html_str="""<html><head><meta charset='utf-8'>"""+\
 """<style>h3 {color:#aa33ff; text-shadow:3px 3px 3px slategray;} """+\
 """pre {width:99%; padding-left:3px; border:2px double slategray;} """+\
 """.sagecell_output {width:99%; border:2px double slategray; padding-right:1px;} """+\
-""".sagecell_interactControlLabel:hover {padding-left:3px; color:#aa33ff; font-size:120%;} """+\
+""".sagecell_interactControlLabel:hover """+\
+"""{padding-left:3px; color:#aa33ff; font-size:120%;} """+\
 """.sagecell_interactOutput {padding-left:3px;}</style>"""+\
 """<body><h3>$$\large{\mathbb{Interactive \; 3D \; Plotting}}$$</h3>"""+\
 """<p>Click the $\large{\mathbb{run}}$ button to display an example.</p>"""+\
@@ -150,15 +149,15 @@ html_str="""<html><head><meta charset='utf-8'>"""+\
 """\n                          random(),random()))"""+\
 """\n    LG.show(frame=False,aspect_ratio=1)"""+\
 """</script></div></body></html>"""
-HTML(html_str)
+display(HTML(html_str))
 
 dhtml('External Interactive Code Cells',c10,f2,fs7)
 
 # Commented out IPython magic to ensure Python compatibility.
 # %%html
 # <div id='smcell' style='border:10px double white; 
-#      width:520px; height:840px; overflow:auto; 
+#      width:700px; height:950px; overflow:auto; 
 #      padding:10px; background-color:ghostwhite'>
 # <iframe id='if1' 
-# src='https://olgabelitskaya.github.io/kaggle_smc/kaggle_interactive.html' 
-# width='480' height='800'/></div>
+# src='https://olgabelitskaya.gitlab.io/kaggle/kaggle_smc01.html' 
+# width='650' height='900'/></div>
