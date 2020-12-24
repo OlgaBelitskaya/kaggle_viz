@@ -347,8 +347,8 @@ grid(col=c0)
 #dev.off()
 
 shtml<-'<div style="border:10px double white; 
-                    width:620px; height:920px; overflow:auto; 
+                    width:680px; height:920px; overflow:auto; 
                     padding:10px; background-color:ghostwhite">
-<iframe src="https://olgabelitskaya.github.io/kaggle_smc/kaggle_smc2.html" 
+<iframe src="https://olgabelitskaya.gitlab.io/kaggle/kaggle_smc03.html" 
         width="99%" height="99%"/></div>'
 display_html(shtml)
