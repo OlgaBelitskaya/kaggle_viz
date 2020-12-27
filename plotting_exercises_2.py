@@ -18,7 +18,7 @@ fl=['graduation_rate','city','council_district']
 se=se[fl].dropna()
 se['graduation_rate_range']=se.shape[0]*['0']
 se['graduation_rate']=se['graduation_rate']\
-.astype('object').str.replace("N/A","0").astype('float')
+.astype('object').str.replace('N/A','0').astype('float')
 se['council_district']=se['council_district']\
 .astype('int').astype('object')
 se.loc[se['graduation_rate']<=.5,
@@ -31,7 +31,7 @@ se.loc[se['graduation_rate']>.9,
        'graduation_rate_range']='gr > 0.9'
 gr_list=['gr <= 0.5','0.5 < gr <= 0.75',
          '0.75 < gr <= 0.9','gr > 0.9']
-fig,ax=pl.subplots(nrows=2,ncols=1,figsize=(14,18))
+fig,ax=pl.subplots(nrows=2,ncols=1,figsize=(10,10))
 s='Student Graduation Rate by Council Districts and Cities'
 ax[0].tick_params('x',rotation=90)
 pd.crosstab(se['council_district'],
@@ -42,7 +42,7 @@ city_list=['New York','Bronx','Brooklyn','Staten Island',
 data=se.loc[se['city'].isin(city_list)]
 pd.crosstab(data['city'],se['graduation_rate_range'])[gr_list]\
 .plot.barh(ax=ax[1],cmap=pl.cm.bwr)
-pl.suptitle(s); pl.show()
+pl.suptitle(s); pl.tight_layout(); pl.show()
 
 """## Table Styling"""
 
@@ -65,11 +65,14 @@ pl.table(cellText=cell_text,rowLabels=rows,
          rowColours=colors,colLabels=columns,loc='bottom')
 pl.title('Samples of the Wholesale Customers Dataset')
 pl.subplots_adjust(left=.1,bottom=.05);
+pl.tight_layout()
 
 import numpy as np,pandas as pd
-style_dict={'font-size':'120%','text-shadow':'#aaa 2px 2px 2px'}
-head_styler=(('color','slategray'),('font-size','300%'),
-             ('text-shadow','#aaa 2px 2px 2px'),('text-align','center'))
+pd.set_option('display.precision',5)
+style_dict={'font-size':'120%','text-shadow':'#aaa 3px 3px 3px',
+            'text-align':'right'}
+head_styler=(('color','slategray'),('font-size','250%'),
+             ('text-shadow','#aaa 3px 3px 3px'),('text-align','center'))
 index=[chr(i) for i in range(ord('a'),ord('h')+1)]; 
 columns=['&#x2654;','&#x2655;','&#x2656;',
          '&#x2657;','&#x2658;','&#x2659;']
@@ -78,17 +81,18 @@ df.style.set_properties(**style_dict)\
 .background_gradient(cmap='Pastel1')\
 .set_table_styles([dict(selector='th',props=head_styler)])
 
-"""## Plotly.js"""
+"""## Plotly PyJs """
 
-import IPython,pandas as pd,cufflinks as cf
+from IPython.core.display import HTML,display
+import pandas as pd,cufflinks as cf
 from plotly.offline import init_notebook_mode
 def configure_plotly():
-    display(IPython.core.display.HTML('''
-    <script src="/static/components/requirejs/require.js"></script>
-    <script>requirejs.config({
-        paths:{base:"/static/base",
-               plotly:"https://cdn.plot.ly/plotly-1.5.1.min.js?noext"}});
-  </script>'''))
+    display(HTML("""
+<script src='https://static/components/requirejs/require.js'>
+</script><script>requirejs.config({
+paths:{base:'/static/base',
+       plotly:'https://cdn.plot.ly/plotly-1.5.1.min.js'}});
+</script>"""))
 cf.go_offline(); configure_plotly()
 init_notebook_mode(connected=False)
 pd.set_option('display.float_format',lambda x:'%.1f'%x)
@@ -97,19 +101,21 @@ url='https://raw.githubusercontent.com/noahgift/'+\
     'Zip_Zhvi_SingleFamilyResidence.csv'
 re=pd.read_csv(url).dropna().astype({'RegionID':'int'})\
      .astype({'RegionName':'int'}).astype({'SizeRank':'int'})
-re_median=pd.concat([re[re["CountyName"]=="Los Angeles"].median(),
-                     re[re["CountyName"]=="San Francisco"].median(),
+re_median=pd.concat([re[re['CountyName']=='Los Angeles'].median(),
+                     re[re['CountyName']=='San Francisco'].median(),
                      re.median()],axis=1,sort=False).iloc[3:]
-re_median.columns=["Los Angeles","San Francisco","Median USA"]
-re_median.iplot(title="Median Single Family Home Prices 1996-2017",
-                xTitle="Year",yTitle="Sales Price",shape=(3,1),fill=False)
+re_median.columns=['Los Angeles','San Francisco','Median USA']
+#layout=go.Layout(width=680,height=500,template='plotly_dark')
+re_median.iplot(title='Median Single Family Home Prices 1996-2017',
+                xTitle='Year',yTitle='Sales Price',shape=(3,1),fill=False,
+                layout={'width':680,'height':380,'template':'plotly_dark'})
 re_median.T.iloc[:,:10].T
 
-"""## Highcharts.js"""
+"""## Highcharts PyJs"""
 
 from IPython.display import HTML
-html_str='''<script src="https://code.highcharts.com/highcharts.js">
-</script><div id="container1" style="width:600px; height:400px;"/>
+html_str='''<script src='https://code.highcharts.com/highcharts.js'>
+</script><div id='container1' style='width:650px; height:350px;'/>
 <script>
 Highcharts.chart('container1',{
     xAxis:{categories:['Jan','Feb','Mar','Apr','May','Jun',
@@ -126,17 +132,17 @@ Highcharts.chart('container1',{
                              point.plotY+chart.plotTop-10).add(),
     box=text.getBBox();});
 </script>'''
-html_file=open("highcharts.html","w")
+html_file=open('highcharts.html','w')
 html_file.write(html_str); html_file.close()
-HTML('''<div id='data1'><iframe src="highcharts.html" 
-height="420" width="620"></iframe></div>''')
+HTML('''<div id='data1'><iframe src='highcharts.html' 
+height='380' width='680'></iframe></div>''')
 
 from IPython.display import HTML
-html_str='''<script src="https://code.highcharts.com/maps/highmaps.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
-<script src="https://code.highcharts.com/mapdata/custom/europe.js"></script>
-<div id="container" style="width:600px; height:600px;"/><script>
+html_str='''<script src='https://code.highcharts.com/maps/highmaps.js'></script>
+<script src='https://code.highcharts.com/modules/exporting.js'></script>
+<script src='https://code.highcharts.com/modules/offline-exporting.js'></script>
+<script src='https://code.highcharts.com/mapdata/custom/europe.js'></script>
+<div id='container' style='width:650px; height:500px;'/><script>
 var s1='Variants for Highlighting:<br>AL,AD,AM,AT,BY,',
     s2='BE,BA,BG,CH,CY,CZ,DE,DK,EE,ES,FO,FI,FR,GB,GE,GI,GR,',
     s3='<br>HU,HR,IE,IS,IT,LT,LU,LV,MC,MK,MT,NO,NL,PL,',
@@ -150,15 +156,16 @@ Highcharts.mapChart('container', {
     series:[{name:'Country',color:'#1636ff',borderColor:'steelblue',borderWidth:1.5,
              data:[['fr',1],['gb',1],['es',1],['de',1],['it',1],['pl',1],['by',1]],
              dataLabels:{enabled:true,color:'#fff',
-                         formatter:function (){if (this.point.value){return this.point.name;}}},
+                         formatter:function (){
+                             if (this.point.value){return this.point.name;}}},
              tooltip:{headerFormat:'',pointFormat:'{point.name}'}}] });
  </script>'''
-html_file=open("highcharts2.html","w")
+html_file=open('highcharts2.html','w')
 html_file.write(html_str); html_file.close()
-HTML('''<iframe src="highcharts2.html" 
-height="650" width="650"></iframe>''')
+HTML('''<iframe src='highcharts2.html' 
+height='550' width='680'></iframe>''')
 
-"""## d3js.js"""
+"""## D3 PyJs"""
 
 from IPython.display import HTML
 html_str='''<style>
@@ -166,56 +173,60 @@ svg {background-color:cornflowerblue;}
 .land {fill:#3636ff; stroke:silver;}
 .countries {fill:none; stroke:silver;}
 </style>
-<script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="https://d3js.org/topojson.v0.min.js"></script>
-<svg width=630 height=330/><script type="text/javascript">
+<script src='https://d3js.org/d3.v3.min.js'></script>
+<script src='https://d3js.org/topojson.v0.min.js'></script>
+<svg width=650 height=320/><script type='text/javascript'>
 var projection=d3.geo.equirectangular().translate([110,205]);
-var svg=d3.select("svg"),g=svg.append("g");
+var svg=d3.select('svg'),g=svg.append('g');
 var path=d3.geo.path().projection(projection);
-var url="https://raw.githubusercontent.com/n1n9-jp/CSIS_map_140514/master/data/"
-d3.json(url.concat("world-50m.json"),
-        function(world) {
-            g.attr("class","land").selectAll("land")
+var url='https://raw.githubusercontent.com/n1n9-jp/CSIS_map_140514/master/data/'
+d3.json(url.concat('world-50m.json'),
+        function(world){
+            g.attr('class','land').selectAll('land')
              .data([topojson.object(world,world.objects.land)])
-             .enter().append("path").attr("d",path);
-            svg.attr("class","countries").selectAll("countries")
+             .enter().append('path').attr('d',path);
+            svg.attr('class','countries').selectAll('countries')
                .data([topojson.object(world,world.objects.countries)])
-               .enter().append("path").attr("d",path);});
+               .enter().append('path').attr('d',path);});
 </script>'''
-html_file=open("d3.html","w")
+html_file=open('d3.html','w')
 html_file.write(html_str); html_file.close()
-HTML('''<div id='data3'><iframe src="d3.html" 
-height="350" width="650"></iframe></div>''')
+HTML('''<div id='data3'><iframe src='d3.html' 
+height=350 width=680></iframe></div>''')
 
 from IPython.display import HTML
 html_str='''<style>
-@import url('https://fonts.googleapis.com/css?family=Sancreek');
-text {fill:#3636ff; font-family:Sancreek; font-size:90%; text-shadow:3px 3px 3px #aaa;}
+@import 'https://fonts.googleapis.com/css?family=Sancreek';
+text {fill:#3636ff; font-family:Sancreek; 
+      font-size:90%; text-shadow:3px 3px 3px #aaa;}
 svg {background-color:lavender;} 
-.bar rect {fill:#3636ff; opacity:0.5;} .bar text {font-size:80%;}
+.bar rect {fill:#3636ff; opacity:.5;} .bar text {font-size:80%;}
 </style>
-<svg width="600" height="300"></svg>
-<script src="https://d3js.org/d3.v4.min.js"></script><script>
-var data=d3.range(3000).map(d3.randomBates(5)),formatCount=d3.format(",.0f");
-var svg=d3.select("svg");
+<svg width='650' height='300'></svg>
+<script src='https://d3js.org/d3.v4.min.js'></script><script>
+var data=d3.range(3000).map(d3.randomBates(5)),formatCount=d3.format(',.0f');
+var svg=d3.select('svg');
     m=30,margin={top:m,right:m,bottom:m,left:m}, 
-    width=+svg.attr("width")-margin.left-margin.right-2,
-    height=+svg.attr("height")-margin.top-margin.bottom,
-    g=svg.append("g").attr("transform","translate("+margin.left+","+margin.top+")");
+    width=+svg.attr('width')-margin.left-margin.right-2,
+    height=+svg.attr('height')-margin.top-margin.bottom,
+    g=svg.append('g').attr('transform','translate('+margin.left+','+margin.top+')');
 var x=d3.scaleLinear().rangeRound([0,width]);
 var bins=d3.histogram().domain(x.domain()).thresholds(x.ticks(30))(data);
-var y=d3.scaleLinear().domain([0,d3.max(bins,function(d){return d.length;})]).range([height,0]);
-var bar=g.selectAll(".bar").data(bins).enter().append("g").attr("class","bar")
-         .attr("transform",function(d){return "translate("+x(d.x0)+","+y(d.length)+")";});
-bar.append("rect").attr("x",1).attr("width",x(bins[0].x1)-x(bins[0].x0)-1)
-                  .attr("height",function(d){return height-y(d.length);});
-bar.append("text").attr("text-anchor","middle").text(function(d){return formatCount(d.length);})
-   .attr("dy",".55em").attr("y",-10).attr("x",(x(bins[0].x1)-x(bins[0].x0))/2);
-g.append("g").attr("class","axis axis--x").call(d3.axisBottom(x))
-             .attr("transform", "translate(0," + height + ")"); 
-g.append("text").attr("y",5).text("An Example of D3 Histograms");
+var y=d3.scaleLinear().domain([0,d3.max(bins,function(d){return d.length;})])
+        .range([height,0]);
+var bar=g.selectAll('.bar').data(bins).enter().append('g').attr('class','bar')
+         .attr('transform',function(d){
+             return 'translate('+x(d.x0)+','+y(d.length)+')';});
+bar.append("rect").attr('x',1).attr('width',x(bins[0].x1)-x(bins[0].x0)-1)
+                  .attr('height',function(d){return height-y(d.length);});
+bar.append('text').attr('text-anchor','middle')
+   .text(function(d){return formatCount(d.length);})
+   .attr('dy','.55em').attr('y',-10).attr('x',(x(bins[0].x1)-x(bins[0].x0))/2);
+g.append('g').attr('class','axis axis--x').call(d3.axisBottom(x))
+             .attr('transform','translate(0,' + height + ')'); 
+g.append('text').attr('y',5).text('An Example of D3 Histograms');
 </script>'''
-html_file=open("d3_2.html","w")
+html_file=open('d3_2.html','w')
 html_file.write(html_str); html_file.close()
-HTML('''<div id='data4'><iframe src="d3_2.html" 
-height="350" width="650"></iframe></div>''')
+HTML('''<div id='data4'><iframe src='d3_2.html' 
+height=350 width=680></iframe></div>''')
