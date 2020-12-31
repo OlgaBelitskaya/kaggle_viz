@@ -35,7 +35,7 @@ colored_header('Barh Charts from HTML Elements')
 # from IPython.display import display,HTML
 # 
 # def barh_chart(data,chart_title,width,
-#                font_size=20,
+#                font_size=16,
 #                font_family='Wallpoet',
 #                background_color='#ff355e'):
 #     dmax=max(data)
@@ -43,7 +43,7 @@ colored_header('Barh Charts from HTML Elements')
 #     @import 'https://fonts.googleapis.com/css?family="""+\
 #     font_family+\
 #     """'; .div_params {padding:5px; width:"""+\
-#     str(round(width/100*dmax*1.1))+\
+#     str(round(width/100*dmax))+\
 #     """px; text-align:right; text-shadow:4px 4px 4px slategray; 
 #     color:lightgray; font-size:"""+\
 #     str(font_size)+\
@@ -53,7 +53,7 @@ colored_header('Barh Charts from HTML Elements')
 #     slategray 67%, darkslategray 100%);}
 #     .div_params_in {background:"""+\
 #     background_color+\
-#     """; padding:10px; margin:3px;}
+#     """; padding:5px; margin:3px;}
 #     #div_h2 {text-shadow:4px 4px 4px slategray; color:"""+\
 #     background_color+"""; font-family:"""+font_family+\
 #     """;}</style>
@@ -61,13 +61,73 @@ colored_header('Barh Charts from HTML Elements')
 #     chart_title+"""</h2>"""
 #     for i in range(len(data)):
 #         html_str+="""<div class='div_params_in' style='width:"""+\
-#                   str(width/100*data[i])+"""px;'>"""+\
+#                   str(.9*width/100*data[i])+"""px;'>"""+\
 #                   str(data[i])+"""</div>"""
 #     html_str+="""</div><br/>"""
 #     display(HTML(html_str))
 
 # Commented out IPython magic to ensure Python compatibility.
 # %run barh_chart.py
-width=1100; data=[4,12,21,38,42,55]
+width=1200; data=[4,12,21,38,42,55]
 chart_title='Building Bar Charts'
 barh_chart(data,chart_title,width)
+
+colored_header('Barh Charts from D3 Elements')
+
+# Commented out IPython magic to ensure Python compatibility.
+# %%writefile d3barh_chart.py
+# from IPython.display import display,HTML
+# import random
+# 
+# def d3barh_chart(data,chart_title,width,height,
+#                  color='silver',cmap='Sinebow',
+#                  font_size=24,font_family='Wallpoet'):
+#     html_str="""
+# <style>
+# @import 'https://fonts.googleapis.com/css?family="""+\
+# font_family+"""';
+# #d3barchart_title {color:"""+color+"""; font-family:"""+\
+# font_family+"""; font-size:"""+str(font_size)+"""px;}
+# #d3barchart {width:98%; height:95%;}
+# </style>
+# <script src='https://d3js.org/d3.v6.min.js'></script>
+# <div id='d3barchart'><text id='d3barchart_title'></text></div>
+# <script>
+# var data="""+str(data)+""";
+# var tc=setInterval(function(){
+#     var now=new Date().getTime();
+#     var width=Math.min(window.screen.width,window.innerWidth);
+#     var div=d3.select('#d3barchart');
+#     div.select('#d3barchart_title')
+#        .text('"""+chart_title+"""');
+#     div.style('text-align','right')
+#        .style('text-shadow','3px 3px 3px slategray')
+#        .style('padding','5px')
+#        .style('color',d3.interpolate"""+cmap+"""(now/1000000))
+#        .style('background',d3.interpolate"""+cmap+"""(now/1000000));
+#     var x=d3.scaleLinear().domain([0,d3.max(data)]).range([0,.9*width])
+#     div.selectAll('div').data(data).join('div')
+#        .style('background','"""+color+"""')
+#        .style('padding','5px').style('margin','3px')
+#        .style('width',d=>x(d)+'px')
+#        .style('font-family','"""+font_family+"""')
+#        .style('font-size','"""+str(font_size)+"""px')
+#        .text(d=>d);},100);
+# </script>"""
+#     file='d3barh_chart'+str(random.uniform(0,9999999))+'.html'
+#     with open(file,'w') as f:
+#          f.write(html_str); f.close()
+#     string="""<div id='html_string2'><iframe src='"""+\
+#            file+"""' height="""+str(height)+\
+#            """ width="""+str(width)+"""></iframe></div>"""
+#     display(HTML(string))
+
+# Commented out IPython magic to ensure Python compatibility.
+# %run d3barh_chart.py
+width=680; height=280
+data=[4,12,21,38,42,55]
+chart_title='An Example of D3 Bar Charts'
+d3barh_chart(data,chart_title,width,height)
+
+d3barh_chart(data,chart_title,width,height,
+             'white','Turbo',18,'Orbitron')
