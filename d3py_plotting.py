@@ -9,20 +9,139 @@ Original file is located at
 
 # Commented out IPython magic to ensure Python compatibility.
 # %run ../input/python-recipes/dhtml.py
-dhtml('D3Scatter XY & CSV')
+# %run ../input/python-recipes/embedding_html_string.py
+dhtml('D3Scatter2D & CSV')
 
-# Commented out IPython magic to ensure Python compatibility.
-# %run ../input/python-recipes/d3scatter_xy_csv.py
+import random
+def randi(): return random.randint(1,99)
+
+# ../input/python-recipes/d3scatter2d_csv.py
+from IPython.display import display,HTML
+import random
+def d3scatter2d_csv(csv_url,x='x',y='y',marker_size=3,
+                    background_color='silver',grid_color='black',
+                    width=500,height=500):
+    randi=random.randint(1,999999999)
+    css_str="""<style>.grid1 line,.grid1 path,.xaxis1,.yaxis1 
+    {stroke:"""+grid_color+"""; stroke-opacity:.5;}</style>"""
+    html_str="""<script src='https://d3js.org/d3.v4.min.js'>
+    </"""+"""script><svg id='svg"""+str(randi)+"""' 
+    style='background-color:"""+background_color+"""'></svg><br/>"""
+    scr_str="""<script>
+    var url='"""+csv_url+"""'; 
+    d3.csv(url,function(data) {
+        var xmin=d3.min(data,function(d) {return parseFloat(d."""+x+""");}),
+            xmax=d3.max(data,function(d) {return parseFloat(d."""+x+""");});
+        var ymin=d3.min(data,function(d) {return parseFloat(d."""+y+""");}),
+            ymax=d3.max(data,function(d) {return parseFloat(d."""+y+""");});
+        var n=data.length,m=20,margin={top:m,right:m,bottom:m,left:m},
+            width="""+str(width)+"""-margin.left-margin.right,
+            height="""+str(height)+"""-margin.top-margin.bottom;
+        var xScale=d3.scaleLinear()
+                     .domain([1.1*xmin,1.1*xmax]).range([0,width]),
+            yScale=d3.scaleLinear()
+                     .domain([1.1*ymin,1.1*ymax]).range([height,0]); 
+        function make_x_gridlines() {
+            return d3.axisBottom(xScale).ticks(11)}; 
+        function make_y_gridlines() { 
+            return d3.axisLeft(yScale).ticks(11)};  
+        var pointColor=d3.scaleSequential().domain([0,n]) 
+                         .interpolator(d3.interpolateRainbow);  
+        var tr1='translate('+margin.left+','+margin.top+')',
+            tr2='translate(0,'+height+')';  
+        var svg=d3.select('#svg"""+str(randi)+"""') 
+                  .attr('width',width+margin.left+margin.right) 
+                  .attr('height',height+margin.top+margin.bottom) 
+                  .append('g').attr('transform',tr1);  
+        svg.append('g').attr('class','xaxis1') 
+           .call(d3.axisBottom(xScale).tickSize(.5)).attr('transform',tr2);  
+        svg.append('g').attr('class','yaxis1') 
+           .call(d3.axisLeft(yScale).tickSize(.5)); 
+        svg.append('g').attr('class','grid1').attr('transform',tr2)
+           .call(make_x_gridlines().tickSize(-height).tickFormat(''));
+        svg.append('g').attr('class','grid1').call(make_y_gridlines()
+           .tickSize(-width).tickFormat(''));
+        svg.selectAll('.point').data(data).enter()
+           .append('circle').attr('class','point')
+           .attr('fill',function(d,i){return pointColor(i)})
+           .attr('r',"""+str(marker_size)+""")
+           .attr('stroke','#fff')
+           .attr('stroke-width',"""+str(.1*marker_size)+""")
+           .attr('cx',function(d) {return xScale(d."""+x+""")})
+           .attr('cy',function(d) {return yScale(d."""+y+""")}); 
+    });</script>"""
+    return css_str+html_str+scr_str
+
 csv_url='https://olgabelitskaya.github.io/castle.csv'
-d3scatter_xy_csv(csv_url,'x','z',2,'ghostwhite','steelblue',600,300)
+html_str=d3scatter2d_csv(csv_url,'x','z',2,
+                         'ghostwhite','steelblue',600,300)
+width,height=630,330
+embedding_html_string(html_str,width,height,randi())
 
 csv_url='https://olgabelitskaya.github.io/beethoven.csv'
-d3scatter_xy_csv(csv_url,'x','z',.7,'black','slategray',600,700)
+html_str=d3scatter2d_csv(csv_url,'x','z',.7,
+                         'black','slategray',600,700)
+width,height=630,730
+embedding_html_string(html_str,width,height,randi())
 
 dhtml('D3 Bar Charts & Lists')
 
-# Commented out IPython magic to ensure Python compatibility.
-# %run ../input/python-recipes/d3barchart_list.py
-num_list=[1,5,14,16,8,22,7,11,13,4,26,2,30,19,3,
-          2,4,8,6,17,1,4,5,2,3,23,18,14,11,5]
-d3barchart_list(num_list)
+#../input/python-recipes/d3barchart_list.py
+from IPython.display import display,HTML
+import random
+def d3barchart_list(num_list1,num_list2,background_color='silver',
+                    width=600,height=400):
+    num_list1,num_list2=str(num_list1),str(num_list2) 
+    randi=random.randint(1,999999999)
+    css_str="""<style>#run_update 
+    {fill:slategray;stroke:#fff; fill-opacity:.7}</style>"""
+    html_str="""<script src='https://d3js.org/d3.v6.min.js'>
+    </"""+"""script><svg id='svg"""+str(randi)+"""' 
+    style='background-color:"""+background_color+""";'></svg><br/><br/>"""
+    scr_str="""<script>
+        var data="""+num_list1+""",m=20; 
+        var n=data.length,ymax=1.2*d3.max(data),
+            margin={top:m,right:m,bottom:m,left:m},
+            width="""+str(width)+"""-margin.left-margin.right,
+            height="""+str(height)+"""-margin.top-margin.bottom;
+        var trans='translate('+margin.left+','+margin.top+')'; 
+        var xScale=d3.scaleBand().domain(d3.range(n))
+                     .rangeRound([0,width]).paddingInner(.1),
+            yScale=d3.scaleLinear().domain([0,ymax]).range([0,height]);
+        var svg=d3.select('#svg"""+str(randi)+"""')
+                  .attr('width',width).attr('height',height)
+                  .attr('transform',trans); 
+        svg.selectAll('rect').data(data).enter().append('rect')
+           .attr('x',function(d,i) {return xScale(i);})
+           .attr('y',function(d) {return height-yScale(d);})
+           .attr('width',xScale.bandwidth())
+           .attr('height',function(d) {return yScale(d);})
+           .attr('fill',function(d) { 
+               return 'rgb('+Math.round(d*50/ymax)+',0,'+
+                       Math.round(d*255/ymax)+')';}); 
+        function newData() {
+            var n=data.length; 
+            while (data.length>0) {data.pop();}; 
+            for (var i=0; i<n; i++) {data.push("""+num_list2+"""[i]);}; 
+            return data}; 
+        function updateBar() {
+            svg.selectAll('rect').data(data).transition().duration(3000)
+               .attr('y',function(d) {return height-yScale(d);})
+               .attr('height',function(d) {return yScale(d);})
+               .attr('fill',function(d) {
+                   return 'rgb('+Math.round(d*50/ymax)+',0,'+
+                          Math.round(d*255/ymax)+')';}); }; 
+        svg.append('circle').attr('id','run_update')
+           .attr('cx',m).attr('cy',1.25*m).attr('r',15)
+           .on('click',function() {newData(); updateBar();}); 
+        svg.append('text').text(' <<< UPDATE')
+           .attr('x',2*m).attr('y',1.25*m).attr('fill','#fff');
+    </script>"""
+    return css_str+html_str+scr_str
+
+import numpy as np
+num_list1=list(np.random.randint(1,100,50))
+num_list2=list(np.random.randint(1,100,50))
+html_str=d3barchart_list(num_list1,num_list2)
+width,height=600,400
+embedding_html_string(html_str,width,height,randi())
